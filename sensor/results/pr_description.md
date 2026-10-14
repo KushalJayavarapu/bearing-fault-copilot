@@ -9,6 +9,7 @@ Adds the sensor fault classifier under `sensor/`. It takes a CWRU 12 kHz drive-e
 - The data comes from a lab rig with EDM-cut faults.
 
 Contract: section 1 is unchanged and matches field by field. Two optional additions are proposed to Kushal in chat (an uncertainty.level mapping and an `evidence` field); neither is in the JSON yet.
+The 0.60 and 0.95 cut-offs were chosen by looking at the held-out folds, so the band accuracies are slightly optimistic; the headline model numbers are unaffected.
 
 Root files are untouched. The only file outside sensor code is the replacement of the `sensor/README.md` placeholder.
 
@@ -29,6 +30,6 @@ python -m sensor.evaluate                               # regenerates sensor/res
 - [x] Follows the data contract in `docs/contract.md` (section 1 unchanged; proposed optional additions announced to Kushal, not merged)
 - [x] No secrets, raw data, source PDFs or model weights committed (`.mat` and models are gitignored; largest committed file is the 37 KB confusion matrix PNG)
 - [x] Works in mock mode (`MOCK_MODE=true` or `SENSOR_MOCK=1`)
-- [ ] Small enough to review in about 10 minutes: no. It is the whole sensor folder in one PR, split into 6 commits. Review commit by commit; the interface is in `sensor/predict.py` and the numbers are in `sensor/results/summary.md`.
+- [ ] Small enough to review in about 10 minutes: no. It is the whole sensor folder in one PR, split into small commits by step. Review commit by commit; the interface is in `sensor/predict.py` and the numbers are in `sensor/results/summary.md`.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
