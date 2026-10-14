@@ -17,7 +17,7 @@ python -m venv .venv
 # activate: Git Bash  source .venv/Scripts/activate | PowerShell  .venv\Scripts\Activate.ps1 | Linux/macOS  source .venv/bin/activate
 pip install -r app/api/requirements.txt
 python -m app                      # http://localhost:8080  (opens the interactive docs with "try it" buttons, also at /docs)
-python -m app.api.test_api         # self-check, 10 checks
+python -m app.api.test_all         # every self-check (41 checks, no key or network needed)
 ```
 
 Settings (all optional, same names as `.env.example`):
@@ -27,6 +27,10 @@ Settings (all optional, same names as `.env.example`):
 | `MOCK_MODE` | `true` | `false` makes the data endpoints answer 501 until the real pipeline is connected |
 | `API_HOST` | `127.0.0.1` | use `0.0.0.0` inside Docker |
 | `API_PORT` | `8080` | |
+| `LLM_MOCK` | same as `MOCK_MODE` | `false` (with `MOCK_MODE=true`) gets the explanation from the real LLM, see below |
+| `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` | none | the OpenAI-compatible LLM server; put them in `.env` (never commit it) |
+| `LLM_SERVED_ON` | `unknown` | what to show as `meta.served_on`; set it to what really serves the model |
+| `LLM_MAX_CONCURRENT` | `2` | simultaneous LLM calls from this app (the team shares one key) |
 | `CORS_ORIGINS` | `*` | comma-separated list; set it when the UI is hosted on its own domain |
 
 PowerShell example: `$env:API_PORT = "9000"; python -m app`
@@ -66,5 +70,24 @@ Errors: unknown recording or request id is 404, window out of range or bad body 
 - `needs_human_confirm` is true when any action is `safety_critical` or the uncertainty is high.
 - The latency numbers are fixed placeholders.
 
-Everything outside `/health`, `/recordings`, `/signal`, `/analyze` and `/confirm` is not built yet: retrieval, the LLM call
-and the real sensor hookup come next.
+## Real LLM explanation (once the key is unlocked)
+
+1. Copy `.env.example` to `.env` and fill in `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`. `.env` is gitignored. Never paste the key in the chat.
+2. Test the connection: `python -m app.api.llm_smoke`. It lists the models, sends one prompt, checks JSON mode, and prints a line to post
+   in the team chat (it never prints the key).
+3. In `.env` set `LLM_MOCK=false` and restart `python -m app`. `/analyze` now gets its explanation from the real LLM.
+   The sensor result and the reference passages are still mock/stub until those parts are connected (`/health` shows `mode: mixed`).
+
+How the LLM is used (`app/api/orchestrator.py`, `app/api/prompt.py`):
+
+- The model writes only the explanation, causes and actions. Sensor result, uncertainty, citations, `needs_human_confirm` and `meta`
+  are built by our code, so the model cannot fake them.
+- Citations only come from retrieved passages. An action the passages do not support is dropped. A step that sounds like physical work
+  (stop, isolate, open, remove, replace, inspect the bearing) is always `safety_critical`, whatever the model says.
+- High uncertainty: the text is hedged and "arrange a manual inspection" comes first.
+- Vibration evidence that disagrees with the classifier is shown in the note, and uncertainty cannot then be `low`.
+- No retrieved passages: the LLM is not asked. LLM down or an unusable answer (after one repair try): the answer shows the sensor result
+  and a manual inspection, never an error page. 429 and 5xx are retried with backoff.
+- The reference passages are untrusted text: the prompt tells the model to ignore instructions inside them.
+
+Still to come: connecting the real retrieval and the real sensor (`MOCK_MODE=false`), which today answers 501.

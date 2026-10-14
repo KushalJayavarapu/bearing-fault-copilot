@@ -186,13 +186,6 @@ CONTENT = {
     },
 }
 HEDGE = "The classifier is not sure about this window, so treat what follows as a possibility, not a finding. "
-NOTES = {
-    "high": "Low confidence ({pct}%). Treat this label as a hint only and arrange a manual inspection.",
-    "medium": "Moderate confidence ({pct}%). Confirm with a manual check before acting.",
-    "low": "High confidence ({pct}%) on lab-trained data. Confirm before acting on safety-critical steps.",
-}
-
-
 def analyze(rid, idx):
     """The final answer (contract section 3) without request_id."""
     sensor = sensor_result(rid, idx)
@@ -212,7 +205,7 @@ def analyze(rid, idx):
         "recommended_actions": actions,
         "needs_human_confirm": level == "high" or any(a["safety_critical"] for a in actions),
         "citations": copy.deepcopy(content["citations"]),
-        "uncertainty": {"level": level, "note": NOTES[level].format(pct=round(conf * 100))},
+        "uncertainty": {"level": level, "note": uncertainty.note(level, conf)},
         "meta": {"model": "mock", "served_on": "mock (no AMD GPU used)",
                  "latency_ms": {"classifier": 84, "retrieval": 120, "llm": 1800, "total": 2004}},
     }
