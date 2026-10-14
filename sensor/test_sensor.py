@@ -46,6 +46,11 @@ if __name__ == "__main__":
     check_evidence(SAMPLE["evidence"])
     print("mock == docs/contract.md section 1 sample")
 
+    from .data_loading import ALL_FILES, DATA_DIR, MANIFEST, RECORDINGS, verify
+    assert {m["file"] for m in ALL_FILES.values()} == set(MANIFEST)
+    assert all(verify(DATA_DIR / f"{m['file']}.mat", m["file"]) is None for m in RECORDINGS.values())
+    print("40 recordings match cwru_manifest.json")
+
     from .predict import evidence, get_window, list_recordings, predict
     recs = list_recordings()
     held = [r for r in recs if r["held_out"]]

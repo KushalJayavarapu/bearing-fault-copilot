@@ -58,7 +58,8 @@ def normal_env_p99(loads):
     return np.percentile(np.concatenate(ratios), 99, axis=0)
 
 
-if __name__ == "__main__":
+def train_all():
+    """Train and save both model files (demo default, all)."""
     X, y_type, y_sev, rec, load = build_dataset()
     print("dataset:", X.shape, dict(zip(*np.unique(y_type, return_counts=True))))
     MODEL_DIR.mkdir(exist_ok=True)
@@ -67,3 +68,7 @@ if __name__ == "__main__":
         m["normal_env_p99"] = normal_env_p99(sorted(set(load[keep])))
         joblib.dump(m, MODEL_PATHS[variant], compress=3)
         print(f"saved {variant}: {keep.sum()} windows -> {MODEL_PATHS[variant]} ({MODEL_PATHS[variant].stat().st_size / 1e6:.1f} MB)")
+
+
+if __name__ == "__main__":
+    train_all()

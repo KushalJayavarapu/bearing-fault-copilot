@@ -5,7 +5,9 @@ or --data-dir PATH on the command line. Files are <number>.mat.
 
 python -m sensor.data_loading [--download] [--data-dir PATH]
 """
+import hashlib
 import http.client
+import json
 import os
 import re
 import shutil
@@ -56,36 +58,75 @@ OR_STRETCH = {
 ALL_FILES = RECORDINGS | OR_STRETCH
 
 
-def _fetch(url, dest, tries=20):
-    """Download with resume: the CWRU server cuts each transfer after ~3 s, so keep asking for the rest
-    (HTTP Range) until the file reaches its full size. Writes to .part and renames only when complete."""
-    part = dest.with_suffix(".part")
-    part.unlink(missing_ok=True)
-    total = None
-    for _ in range(tries):
-        have = part.stat().st_size if part.exists() else 0
-        req = urllib.request.Request(url, headers={"Range": f"bytes={have}-"} if have else {})
-        try:
-            with urllib.request.urlopen(req, timeout=60) as r, open(part, "ab" if r.status == 206 else "wb") as f:
-                total = total or int(r.headers["Content-Range"].split("/")[1] if r.status == 206 else r.headers["Content-Length"])
-                shutil.copyfileobj(r, f)
-        except (urllib.error.URLError, http.client.IncompleteRead, OSError):
-            pass  # keep what arrived, resume on the next try
-        if total and part.exists() and part.stat().st_size == total:
+MANIFEST = {r["file"]: r for r in json.loads((Path(__file__).resolve().parent / "cwru_manifest.json").read_text())}
+
+
+def _sha256(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def verify(path, file_number):
+    """Problem with a local file vs the committed manifest (cwru_manifest.json), or None if it matches."""
+    want = MANIFEST[file_number]
+    size = path.stat().st_size
+    if size != want["bytes"]:
+        return f"{path.name}: {size} bytes, manifest says {want['bytes']} (truncated or wrong file)"
+    if _sha256(path) != want["sha256"]:
+        return f"{path.name}: SHA-256 differs from the manifest"
+    return None
+
+
+def _fetch(file_number, dest, attempts=3, resumes=20):
+    """Download with resume (the CWRU server cuts each transfer after ~3 s, so ask for the rest with HTTP Range
+    until the manifest size is reached), verify SHA-256, and only then rename .part -> .mat.
+    A wrong hash restarts the download; after `attempts` full tries it raises. Never leaves a bad .mat behind."""
+    want, part = MANIFEST[file_number], dest.with_suffix(".part")
+    for attempt in range(1, attempts + 1):
+        part.unlink(missing_ok=True)
+        for _ in range(resumes):
+            have = part.stat().st_size if part.exists() else 0
+            if have >= want["bytes"]:
+                break
+            req = urllib.request.Request(want["url"], headers={"Range": f"bytes={have}-"} if have else {})
+            try:
+                with urllib.request.urlopen(req, timeout=60) as r, open(part, "ab" if r.status == 206 else "wb") as f:
+                    shutil.copyfileobj(r, f)
+            except (urllib.error.URLError, http.client.IncompleteRead, OSError):
+                pass  # keep what arrived, resume on the next request
+        problem = verify(part, file_number) if part.exists() else f"{part.name}: nothing downloaded"
+        if problem is None:
             part.replace(dest)
             return
+        print(f"  attempt {attempt}/{attempts} failed: {problem}")
     part.unlink(missing_ok=True)
-    raise RuntimeError(f"{dest.name}: incomplete after {tries} tries; rerun to retry")
+    raise RuntimeError(f"{dest.name}: could not download a file matching cwru_manifest.json after {attempts} attempts")
+
+
+def download(recordings):
+    """Make sure every recording's .mat is present and matches the manifest. Downloads missing files;
+    a present file that does not match raises (never silently used, never silently deleted)."""
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    fetched = 0
+    for meta in recordings.values():
+        path = DATA_DIR / f"{meta['file']}.mat"
+        if path.exists():
+            problem = verify(path, meta["file"])
+            if problem:
+                raise RuntimeError(f"{problem}. Delete it and rerun to download a fresh copy.")
+            continue
+        print("downloading", path.name)
+        _fetch(meta["file"], path)
+        fetched += 1
+    return fetched
 
 
 def download_all():
-    """Fallback downloader until Atharva's script exists. Skips files already present."""
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    for meta in ALL_FILES.values():
-        path = DATA_DIR / f"{meta['file']}.mat"
-        if not path.exists():
-            print("downloading", path.name)
-            _fetch(URL.format(meta["file"]), path)
+    """All files in the table: the 40 recordings plus the outer race @3/@12 stretch-test files."""
+    return download(ALL_FILES)
 
 
 @lru_cache(maxsize=None)
