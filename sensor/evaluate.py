@@ -7,6 +7,7 @@ Windows of one recording are never split across train and test.
 
 python -m sensor.evaluate            report for FINAL_VARIANT -> results/results.md + confusion_lolo.png
 python -m sensor.evaluate --compare  all feature variants side by side + inner-CV selection -> results/variants.md
+python -m sensor.evaluate --bands     accuracy per confidence band (for uncertainty.level) -> results/confidence_bands.md
 python -m sensor.evaluate --or-positions  outer race @3/@12 o'clock (unseen bearings) -> results/or_positions.md
 python -m sensor.evaluate --ttd      time-to-detect on the held-out demo recordings -> results/time_to_detect.md
 """
@@ -54,6 +55,7 @@ def run_fold(X, y_type, y_sev, rec, train, test, variant=FINAL_VARIANT):
         "acc_confident": ok[conf >= UNCERTAIN_THRESHOLD].mean(),
         "acc_uncertain": ok[conf < UNCERTAIN_THRESHOLD].mean() if (conf < UNCERTAIN_THRESHOLD).any() else float("nan"),
         "n_test": len(test),
+        "conf": conf,
         "pred": pred,
         "true": y_type[test],
         "importances": m["fault_type"].feature_importances_,
@@ -92,6 +94,27 @@ def table(title, rows):
         lines.append(f"| {name} | {r['n_test']} | " + " | ".join(f"{r[c]:.3f}" for c in COLS) + " |")
     lines.append("| **mean** | | " + " | ".join(f"**{np.nanmean([r[c] for _, r in rows]):.3f}**" for c in COLS) + " |")
     return "\n".join(lines)
+
+
+def confidence_bands(X, y_type, y_sev, rec, load, cuts=(0.6, 0.7, 0.8, 0.9, 0.95)):
+    """Accuracy per confidence band, from out-of-fold predictions only (no window scored by a model that trained on it).
+    Used to map sensor confidence to the final answer's uncertainty.level."""
+    idx = np.arange(len(X))
+    lines = ["### Accuracy by confidence band (out-of-fold fault_type predictions)", "",
+             "| split | band | windows | share | accuracy |", "|---|---|---|---|---|"]
+    for name, splits in [("leave-one-load-out", lolo_splits(load, idx)),
+                         ("leave-one-size-out (unseen bearings)", size_out_splits(y_type, y_sev, load, idx))]:
+        rs = [run_fold(X, y_type, y_sev, rec, tr, te) for _, tr, te in splits]
+        ok = np.concatenate([r["pred"] == r["true"] for r in rs])
+        conf = np.concatenate([r["conf"] for r in rs])
+        edges = [0, *cuts, 1.0001]
+        for lo, hi in zip(edges, edges[1:]):
+            m = (conf >= lo) & (conf < hi)
+            label = f"[{lo:.2f}, {min(hi, 1):.2f}{']' if hi > 1 else ')'}"
+            lines.append(f"| {name} | {label} | {m.sum()} | {m.mean():.1%} | {ok[m].mean():.3f} |" if m.any() else f"| {name} | {label} | 0 | 0.0% | - |")
+    md = "\n".join(lines)
+    (RESULTS / "confidence_bands.md").write_text(md + "\n")
+    print(md)
 
 
 def or_positions():
@@ -164,6 +187,10 @@ if __name__ == "__main__":
     X, y_type, y_sev, rec, load = build_dataset()
     all_idx = np.arange(len(X))
     print("dataset:", X.shape)
+
+    if "--bands" in sys.argv:
+        confidence_bands(X, y_type, y_sev, rec, load)
+        sys.exit()
 
     if "--or-positions" in sys.argv:
         or_positions()
