@@ -10,6 +10,8 @@ Follow-up to #2, from Kushal's review. The model, features and headline numbers 
   - It is marked optional: a missing field means `[]`.
   - It notes that evidence can disagree with `fault_type` and that consumers should show the disagreement. No other part of the contract changed.
 - **`python -m sensor.build`:** downloads the 40 recordings and checks each file's size and SHA-256 against `sensor/cwru_manifest.json`. It resumes cut-off transfers, retries a bad hash 3 times, then stops loudly; a mismatched local file also stops the build. Then it trains. A rerun is a 0.2 s no-op. No data or models are committed.
+- **Runtime data subset:** `python -m sensor.build --runtime-only DIR` copies only what the demo model needs at runtime, the 10 held-out 3 hp recordings (34.2 MB, hash-checked), so a multi-stage Docker image needs those 10 files plus the 1.41 MB model instead of all 40 (140.3 MB). `list_recordings()` lists only the recordings that are present, and a missing one raises a clear `FileNotFoundError`. The README has an example stage split; the Dockerfile itself is Karthiik's.
+- **Data source, terms and citation (README):** the CWRU Bearing Data Center has no dataset license (checked 14 Oct 2026). The data is used with attribution and not redistributed: the repo has only the download script and the SHA-256 manifest, and **Docker images that contain the data must not be pushed to a public registry**. Citation: Smith & Randall, MSSP 64-65:100-131, 2015, doi:10.1016/j.ymssp.2015.04.021 (checked against the DOI).
 
 `app/api/uncertainty.py` (#3) has a TODO to import the thresholds from sensor config: it can now use `sensor.config`. I haven't touched `app/`.
 
@@ -43,7 +45,8 @@ pip install -r sensor/requirements.txt
 MOCK_MODE=true python -m sensor.predict      # mock with no data or model: contract sample including evidence
 python -m sensor.build                       # downloads + verifies 40 files, trains (~5 min first time)
 python -m sensor.build                       # rerun: verifies and exits in well under a second
-python -m sensor.test_sensor                 # expect: mock ok x2, mock == contract sample, manifest ok, interface ok
+python -m sensor.build --runtime-only /tmp/rt  # copies the 10 held-out recordings (34.2 MB) for a runtime image
+python -m sensor.test_sensor                 # expect: mock ok x2, mock == contract sample, manifest ok, runtime-only ok, interface ok
 python -m sensor.evaluate --evidence         # regenerates sensor/results/evidence.md
 pip install -r app/api/requirements.txt pytest && python -m pytest -q app/api/test_api.py   # Kushal's API tests: 10 passed
 ```
