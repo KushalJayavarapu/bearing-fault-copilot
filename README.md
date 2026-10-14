@@ -26,9 +26,11 @@ A "detect, explain, act" maintenance assistant for factory bearings, built for t
 - Never commit secrets (use `.env`, copy from `.env.example`), raw data, source PDFs or model weights.
 - The shapes of the data passed between parts are in [`docs/contract.md`](docs/contract.md). Who waits on whom is in [`docs/dependency-graph.md`](docs/dependency-graph.md).
 
-## Data
+## Data and Citations
 
-CWRU Bearing Dataset (Case Western Reserve University Bearing Data Center): https://engineering.case.edu/bearingdatacenter. Raw files are not stored in this repo; see `data/README.md` for how to fetch them.
+- **CWRU Bearing Dataset:** Vibration data courtesy of the **Case Western Reserve University Bearing Data Center** (https://engineering.case.edu/bearingdatacenter), collected under the direction of Prof. Kenneth A. Loparo, Department of Mechanical and Aerospace Engineering.
+  > Reference: K. A. Loparo, *Bearing Vibration Data*, Case Western Reserve University Bearing Data Center Website.
+- Raw benchmark recordings are not stored directly in this repository; see [`data/README.md`](data/README.md) for data management instructions. CWRU data ingestion is managed centrally by `python -m sensor.build`.
 
 ## Licence
 

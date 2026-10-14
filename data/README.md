@@ -3,7 +3,7 @@
 **Owner:** Atharva (Data and Knowledge Base)  
 **Last updated:** 14 October 2026  
 
-This directory contains the data download utilities, document manifests, curated bridge tables, and synthetic maintenance records required for the Bearing Fault Copilot.
+This directory contains the knowledge manifest, curated bridge tables, synthetic maintenance records, and guide extraction utilities for the Bearing Fault Copilot.
 
 ---
 
@@ -11,60 +11,50 @@ This directory contains the data download utilities, document manifests, curated
 
 ```text
 data/
-├── README.md               # Sources, licenses, download and maintenance notes (this file)
-├── download_cwru.py        # Automated download and validation script for 40 CWRU files
-├── manifest.json           # Catalog of bearing guides (titles, URLs, licenses, retrieval dates)
-├── cwru/                   # [Git-ignored] 40 CWRU .mat files and generated index.csv
+├── README.md               # Sources, licenses, citations and terms of use (this file)
+├── manifest.json           # Catalog of bearing guides (titles, URLs, licenses, page counts)
+├── fetch_guides.py         # Utility script to set up local guide texts (git-ignored)
+├── cwru/                   # [Git-ignored] CWRU benchmark files and index (managed by sensor.build)
 ├── guides/                 # [Git-ignored] Cleaned guide text files with [[page X]] markers
 └── knowledge/              # [Committed] Team-curated technical knowledge
     ├── bridge_table.md     # Curated mapping from CWRU fault locations to damage modes & actions
-    └── logs_synthetic.csv  # 36 realistic synthetic plant maintenance log entries
+    ├── logs_synthetic.csv  # 36 realistic synthetic plant maintenance log entries
+    └── eval_questions.json # 12 independent maintenance questions for retrieval benchmarking
 ```
 
 ---
 
-## 2. Data Sources and Licensing
+## 2. Publisher Terms & Copyright Disclosures
 
-| Source | Description | License / Usage Terms | Retrieval Date |
-| :--- | :--- | :--- | :--- |
-| **CWRU Bearing Data Center** | 12 kHz drive-end vibration recordings (Normal, Inner Race, Outer Race, Ball at 0.007", 0.014", 0.021" at 4 motor loads). URL: [Case Western Reserve University](https://engineering.case.edu/bearingdatacenter) | Public academic benchmark for vibration research. Cite CWRU Bearing Data Center; no redistribution of raw data in git. | 2026-10-14 |
-| **SKF: Bearing damage and failure analysis** | Failure mode definitions, root causes, spalling mechanisms, electrical erosion, and mounting procedures. | Copyrighted manufacturer publication. Referenced and cited by page; raw PDF and full text are kept local and never committed. | 2026-10-14 |
-| **Schaeffler (FAG): Rolling Bearing Damage** | Catalog of typical bearing damage, remedies, smearing, wear, and fretting corrosion. | Copyrighted manufacturer publication. Referenced and cited by page; kept local and git-ignored. | 2026-10-14 |
-| **Electric Motor Bearing Maintenance Guide** | Motor bearing diagnostic screening, greasing rules, alignment tolerances, and electrical safety. | Public technical bulletin. Kept local and git-ignored. | 2026-10-14 |
-| **ISO 15243:2017** | Rolling bearings — Damage and failures — Terms, characteristics and causes. | Proprietary international standard. Failure mode vocabulary borrowed; text is not ingested. | 2026-10-14 |
-| **Curated Bridge Table & Synthetic Logs** | Curated fault-to-cause mappings and synthetic factory log records. | Written by the team and released under the repository's MIT License. | 2026-10-14 |
+Our repository is public and MIT-compliant. To strictly respect publisher copyrights and terms of use:
 
----
-
-## 3. How to Download and Verify the CWRU Dataset
-
-The 40 benchmark recordings comprise:
-- 4 normal baseline recordings (`97`, `98`, `99`, `100`)
-- 12 inner race fault recordings (`105`-`108`, `169`-`172`, `209`-`212`)
-- 12 ball fault recordings (`118`-`121`, `185`-`188`, `222`-`225`)
-- 12 outer race fault recordings centered at 6 o'clock (`130`-`133`, `197`-`200`, `234`-`237`)
-
-### Commands:
-
-1. **Generate the index file only (dry run):**
-   ```bash
-   python data/download_cwru.py --skip-download
-   ```
-
-2. **Download all 40 files and verify `DE_time` variables:**
-   ```bash
-   python data/download_cwru.py
-   ```
-
-3. **Verify existing files:**
-   ```bash
-   python data/download_cwru.py --verify-only
-   ```
+| Source | Status in Git | Publisher Copyright Terms |
+| :--- | :---: | :--- |
+| **SKF: Bearing damage and failure analysis** | **Script Only (Not committed)** | © SKF Group. All rights reserved. Strict proprietary manufacturer document; redistribution of full text prohibited without written permission. Passages cited by page and linked to official portal. |
+| **Schaeffler (FAG): Rolling Bearing Damage** | **Script Only (Not committed)** | © Schaeffler Technologies AG & Co. KG. All rights reserved. Proprietary manufacturer document; kept strictly local and git-ignored. |
+| **Industrial Motor Bearing Maintenance Handbook** | **Script Only (Not committed)** | Derived from U.S. Department of Energy (EERE) public technical literature. Kept local and git-ignored to maintain uniform handling across all guides. |
+| **Curated Bridge Table & Synthetic Logs** | **Committed (OK)** | Authored by the team and released under the repository's MIT License. |
 
 ---
 
-## 4. Curated Knowledge Base
+## 3. CWRU Bearing Data Center Citation & Acknowledgement
 
-- **Bridge Table (`data/knowledge/bridge_table.md`):** Links experimental CWRU labels (`inner_race`, `outer_race`, `ball`) to industrial damage modes (subsurface fatigue spalling, electrical fluting, abrasive wear, brinelling, skidding), explicit inspection actions, safety-critical flags, and specific guide pages.
-- **Synthetic Maintenance Logs (`data/knowledge/logs_synthetic.csv`):** 36 synthetic historical plant maintenance records with fields:
-  `entry_id,date,machine_id,machine_type,symptom,fault_type,action_taken,parts_replaced,downtime_hours,technician_note,synthetic`. All rows have `synthetic=true`.
+Vibration acceleration recordings are sourced from the **Case Western Reserve University (CWRU) Bearing Data Center**:
+- Website: https://engineering.case.edu/bearingdatacenter
+- Citation / Acknowledgment:
+  > *Case Western Reserve University Bearing Data Center. Data collected under the direction of Prof. Kenneth A. Loparo, Department of Mechanical and Aerospace Engineering, Case Western Reserve University, Cleveland, OH, USA.*
+
+CWRU benchmark download and verification is managed centrally by Harshit's sensor pipeline with SHA-256 hash checks via:
+```bash
+python -m sensor.build
+```
+
+---
+
+## 4. Setting Up Local Guide Texts
+
+To extract and prepare the local cleaned guide text files in `data/guides/` prior to building the RAG index:
+```bash
+python -m data.fetch_guides
+```
+This writes local text files with `[[page X]]` citation markers into `data/guides/`, which are git-ignored and never committed.
