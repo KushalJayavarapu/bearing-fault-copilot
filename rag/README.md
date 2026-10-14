@@ -2,13 +2,107 @@
 
 **Owner:** Santos (RAG Pipeline)  
 **Deliverable:** Ingest, chunk, embed, index, and retrieve passages with verified citations over bearing failure guides, bridge tables, and maintenance logs.  
-**Compliance:** Adheres strictly to `docs/contract.md` (v0.1).
+**Compliance:** Adheres strictly to `docs/contract.md` (v0.1 section 2).
 
 ---
 
-## 1. Overview and Architecture
+## 1. Orchestrator Integration
 
-The RAG pipeline translates diagnosed bearing faults (`fault_type`, `severity`) and technician queries into authoritative technical passages with exact page citations and source metadata.
+Kushal's orchestrator imports a single function:
+
+```python
+from rag.retrieve import retrieve
+
+# Standard contract call (request dictionary)
+result = retrieve({
+    "query": "outer race defect, small, deep groove ball bearing: causes and actions",
+    "fault_type": "outer_race",
+    "severity": "small",
+    "top_k": 5
+})
+```
+
+### Mock Mode
+
+For zero-dependency unit tests or frontend development:
+```python
+result = retrieve({"use_mock": True})
+# Or set environment variable:
+# export BEARING_RAG_MOCK=1
+```
+
+### Response Shape (`docs/contract.md` Section 2)
+
+```json
+{
+  "passages": [
+    {
+      "chunk_id": "bridge-table-outer_race-p34-c5",
+      "text": "Bearing Fault Type: outer_race\nDamage Mode: Subsurface initiated spalling...",
+      "source_title": "Curated Bearing Fault Bridge Table",
+      "source_type": "playbook",
+      "page": 34,
+      "url": "data/knowledge/bridge_table.md",
+      "excerpt": "Inspect outer ring load zone pattern; support rotor/housing weight before loosening mount bolts."
+    }
+  ]
+}
+```
+
+---
+
+## 2. Docker & Image Build Commands
+
+Search indices are stored under `rag/index/`, which is git-ignored and not committed. Docker builds the index at image build time with:
+
+```dockerfile
+# 1. Fetch / extract local guide texts
+RUN python -m data.fetch_guides
+
+# 2. Build hybrid BM25 + ONNX dense vector index
+RUN python -m rag.build
+```
+
+### Manual Index Rebuild
+
+```bash
+python -m rag.build
+```
+
+---
+
+## 3. Benchmark & Verification Results
+
+The retrieval engine has been evaluated across three distinct query suites:
+
+### Suite A: Kushal's 10 Orchestrator Queries (1 per fault and size)
+All 10 queries synthesized by the orchestrator were evaluated:
+- `normal / none` (healthy baseline check)
+- `inner_race / small (0.007")`
+- `inner_race / medium (0.014")`
+- `inner_race / large (0.021")`
+- `outer_race / small (0.007")`
+- `outer_race / medium (0.014")`
+- `outer_race / large (0.021")`
+- `ball / small (0.007")`
+- `ball / medium (0.014")`
+- `ball / large (0.021")`
+
+**Result: 10 / 10 PASS (0 failures)**. Every query returns 5 passages with valid `source_title`, `page`, `url`, `chunk_id`, and lead `excerpt`.
+
+### Suite B: Atharva's Independent Test Set (`data/knowledge/eval_questions.json`)
+12 independently authored questions testing specific technical details (fatigue initiation depth, 6 o'clock load zone rotation, ball skidding mitigation, VFD fluting insulation, true brinelling vs false brinelling, and motor LOTO safety).
+
+**Result: 12 / 12 (100.0% Top-5 Hit Rate)**.
+
+### Suite C: Santos's Comprehensive Diagnostic Test Set (`rag/evaluate.py`)
+18 questions across Causes, Symptoms, Actions, and Safety.
+
+**Result: 18 / 18 (100.0% Top-5 Hit Rate, 42.5 ms average latency)**.
+
+---
+
+## 4. Architecture Summary
 
 ```text
        [Classifier Result / Technician Query]
@@ -41,123 +135,4 @@ The RAG pipeline translates diagnosed bearing faults (`fault_type`, `severity`) 
                           │
                           ▼
             [Prompt Helper for Kushal's LLM]
-```
-
----
-
-## 2. Interface and Usage
-
-### A. Calling `retrieve()` in Python (Kushal's Orchestrator)
-
-```python
-from rag import retrieve
-
-# Method 1: Using keyword arguments
-response = retrieve(
-    query="outer race defect, small, deep groove ball bearing: causes and actions",
-    fault_type="outer_race",
-    severity="small",
-    top_k=5
-)
-
-# Method 2: Passing request dict
-response = retrieve(request={
-    "query": "outer race defect, small, deep groove ball bearing: causes and actions",
-    "fault_type": "outer_race",
-    "severity": "small",
-    "top_k": 5
-})
-```
-
-### B. Output Data Shape (`docs/contract.md` compliant)
-
-```json
-{
-  "passages": [
-    {
-      "chunk_id": "skf-damage-p34-c2",
-      "text": "In rotating machinery where the outer ring is stationary...",
-      "source_title": "Bearing damage and failure analysis",
-      "source_type": "guide",
-      "page": 34,
-      "url": "https://www.skf.com/group/products/rolling-bearings/damage-and-failure-analysis",
-      "excerpt": "Radial load produces a concentrated load zone at the 6 o'clock position causing localized fatigue spalling."
-    }
-  ]
-}
-```
-
-### C. Mock Mode (Zero-Dependency Mode)
-
-For local UI testing or orchestrator integration testing without requiring downloaded indices:
-```python
-response = retrieve(use_mock=True)
-# Or set environment variable:
-# export BEARING_RAG_MOCK=1
-```
-
-### D. Formatting Passages for LLM Prompt (`rag.prompt_helper`)
-
-```python
-from rag import format_passages_for_prompt, construct_rag_prompt
-
-prompt_context = format_passages_for_prompt(passages)
-# Outputs numbered passages with [chunk_id], strict anti-hallucination instructions,
-# and instructions to flag safety-critical steps.
-```
-
----
-
-## 3. Rebuilding the Search Index
-
-To ingest all raw documents (`data/guides/`, `data/knowledge/bridge_table.md`, `data/knowledge/logs_synthetic.csv`) and regenerate the hybrid search index in `rag/index/`:
-
-```bash
-python -m rag.build_index
-```
-
-The script builds:
-1. `rag/index/passages.json`: Serialized metadata and chunk text for all 69 passages.
-2. `rag/index/bm25.pkl`: Serialized `BM25Okapi` inverted index for exact keyword matching.
-3. `rag/index/embeddings.npy`: Normalized 384-dimensional dense vectors generated with `BAAI/bge-small-en-v1.5` via ONNX Runtime.
-
----
-
-## 4. Benchmark and Evaluation Results
-
-A standard benchmark test set of 18 realistic technician questions across all 4 required operational domains is implemented in `rag/evaluate.py`:
-- **Causes (5 questions)**
-- **Symptoms and inspection (5 questions)**
-- **Actions and prevention (5 questions)**
-- **Safety and handling (3 questions)**
-
-To run the automated evaluation:
-```bash
-python -m rag.evaluate
-```
-
-### Measured Performance:
-
-| Metric | Target | Measured Result | Status |
-| :--- | :--- | :--- | :--- |
-| **Top-5 Hit Rate** | $\ge 80.0\%$ | **100.0%** (18 / 18) | **PASSED** |
-| **Average Latency** | $< 1000\text{ ms}$ | **43.6 ms** | **PASSED** |
-| **P95 Latency** | $< 1000\text{ ms}$ | **310.8 ms** (includes cold-start model init) | **PASSED** |
-| **Page Deduplication** | 0 repeated pages | **100% unique pages per guide** | **PASSED** |
-
----
-
-## 5. File Structure
-
-```text
-rag/
-├── __init__.py          # Export retrieve, format_passages_for_prompt, models
-├── models.py            # Pydantic data contract models (Passage, RetrievalRequest, RetrievalResponse)
-├── parser.py            # Page marker parser ([[page X]]), markdown table parser, and CSV log parser
-├── indexer.py           # HybridIndex class (BM25Okapi + FastEmbed ONNX dense vectors)
-├── build_index.py       # One-command index rebuild script
-├── retriever.py         # BearingRetriever, query expansion, RRF scoring, page de-duplication
-├── prompt_helper.py     # Anti-hallucination prompt formatting helper for Kushal's LLM
-├── evaluate.py          # 18-question evaluation suite and latency benchmark
-└── README.md            # Architecture, contract, and benchmark documentation (this file)
 ```
