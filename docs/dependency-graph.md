@@ -6,7 +6,7 @@ Who is waiting on whom. Read this when you are blocked, or before you start, to 
 - Dashed arrow: B can start without A, using a stand-in (a mock file, any PDF, or a direct download).
 - Thick-bordered boxes are the critical path. If one of these slips, the submission slips.
 
-**Deadline:** submissions close on **17 Oct, 10:30 PM**. We plan as if that is India time (confirm the zone on Discord). Features freeze at the end of **16 Oct**, and we aim to submit by **6 PM on 17 Oct**, leaving a buffer.
+**Deadline:** submissions close on **17 Oct, 10:30 PM IST**. Features freeze at the end of **16 Oct**, and we aim to submit by **6 PM on 17 Oct**, leaving a buffer.
 
 ## The graph
 
