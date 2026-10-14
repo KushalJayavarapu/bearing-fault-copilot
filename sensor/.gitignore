@@ -1,0 +1,4 @@
+# sensor/ generated files (root .gitignore already covers *.mat, data/raw/, models/, .venv/, __pycache__/)
+models/
+*.joblib
+*.pkl
