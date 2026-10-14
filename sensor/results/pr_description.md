@@ -9,7 +9,7 @@ Adds the sensor fault classifier under `sensor/`. It takes a CWRU 12 kHz drive-e
 - The data comes from a lab rig with EDM-cut faults.
 
 Contract: section 1 is unchanged and matches field by field. Two optional additions are proposed to Kushal in chat (an uncertainty.level mapping and an `evidence` field); neither is in the JSON yet.
-The 0.60 and 0.95 cut-offs were chosen by looking at the held-out folds, so the band accuracies are slightly optimistic; the headline model numbers are unaffected.
+The 0.60 cut-off comes from the task brief. The 0.95 cut-off was chosen by looking at the held-out folds, so accuracy in the medium and low bands is slightly optimistic. The headline model numbers are unaffected.
 
 Root files are untouched. The only file outside sensor code is the replacement of the `sensor/README.md` placeholder.
 

@@ -109,7 +109,7 @@ Out-of-fold predictions only.
 | medium | 0.60 - 0.95 | 1294 | 0.985 | 3278 | 0.716 |
 | low | >= 0.95 | 4493 (76.3%) | 1.000 | 1454 (26.9%) | 0.990 |
 
-The 0.60 and 0.95 cut-offs were chosen by looking at the held-out folds, so the band accuracies are slightly optimistic; the headline model numbers are unaffected.
+The 0.60 cut-off comes from the task brief. The 0.95 cut-off was chosen by looking at the held-out folds, so accuracy in the medium and low bands is slightly optimistic. The headline model numbers are unaffected.
 
 Finer bands: [confidence_bands.md](confidence_bands.md).
 A 0.7 cut would make "low" (0.793) less accurate than "medium" (0.835) on unseen bearings, so 0.95 is the cut that keeps the levels in order.
