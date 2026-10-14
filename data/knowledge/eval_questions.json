@@ -1,0 +1,122 @@
+[
+  {
+    "id": "ATH-01",
+    "question": "What is the typical depth below the raceway contact surface where subsurface shear fatigue cracks initiate?",
+    "fault_type": "inner_race",
+    "severity": "small",
+    "expected_guide": "skf-damage-failure-analysis",
+    "expected_page": 12,
+    "expected_chunk": "skf-damage-failure-analysis-p12-c1",
+    "answer_excerpt": "Microcracks initiate at structural inhomogeneities at a depth corresponding to maximum orthogonal shear stress (typically 0.1 to 0.5 mm beneath contact surface)."
+  },
+  {
+    "id": "ATH-02",
+    "question": "When can an inner ring raceway with fatigue spalling be safely polished and returned to service?",
+    "fault_type": "inner_race",
+    "severity": "small",
+    "expected_guide": "skf-damage-failure-analysis",
+    "expected_page": 12,
+    "expected_chunk": "skf-damage-failure-analysis-p12-c1",
+    "answer_excerpt": "Once spalling has initiated, the bearing cannot be repaired and must be replaced immediately to prevent catastrophic seizure."
+  },
+  {
+    "id": "ATH-03",
+    "question": "What is the primary operational cause for localized fatigue spalling restricted to the 6 o'clock bottom zone of a stationary outer ring?",
+    "fault_type": "outer_race",
+    "severity": "medium",
+    "expected_guide": "skf-damage-failure-analysis",
+    "expected_page": 34,
+    "expected_chunk": "skf-damage-failure-analysis-p34-c1",
+    "answer_excerpt": "Under steady radial load, only an arc of the outer raceway (typically 120 to 150 degrees centered at 6 o'clock) supports the load, concentrating cyclic contact fatigue."
+  },
+  {
+    "id": "ATH-04",
+    "question": "What maintenance action during overhaul can distribute outer ring fatigue and extend operating life in stationary-load applications?",
+    "fault_type": "outer_race",
+    "severity": "small",
+    "expected_guide": "skf-damage-failure-analysis",
+    "expected_page": 34,
+    "expected_chunk": "skf-damage-failure-analysis-p34-c1",
+    "answer_excerpt": "Rotating the outer ring by 90 degrees during overhaul can distribute the load zone and extend service life."
+  },
+  {
+    "id": "ATH-05",
+    "question": "What happens when ball bearings operate with insufficient minimum radial load at high motor speeds?",
+    "fault_type": "ball",
+    "severity": "small",
+    "expected_guide": "schaeffler-bearing-damage",
+    "expected_page": 24,
+    "expected_chunk": "schaeffler-bearing-damage-p24-c1",
+    "answer_excerpt": "Rolling elements decelerate in the unloaded zone and accelerate abruptly upon entering the loaded arc, sliding and causing smearing/skid marks."
+  },
+  {
+    "id": "ATH-06",
+    "question": "How can ball skidding and smearing damage be mitigated in electric motor bearings?",
+    "fault_type": "ball",
+    "severity": "small",
+    "expected_guide": "schaeffler-bearing-damage",
+    "expected_page": 24,
+    "expected_chunk": "schaeffler-bearing-damage-p24-c1",
+    "answer_excerpt": "Increase preload or radial load (e.g. using preload wave springs in electric motors) or lengthen inverter acceleration ramp times."
+  },
+  {
+    "id": "ATH-07",
+    "question": "What electrical mitigation prevents washboard fluting caused by VFD inverter common-mode shaft currents?",
+    "fault_type": "inner_race",
+    "severity": "medium",
+    "expected_guide": "skf-damage-failure-analysis",
+    "expected_page": 30,
+    "expected_chunk": "skf-damage-failure-analysis-p30-c1",
+    "answer_excerpt": "Install an insulated bearing (ceramic balls or aluminum oxide coated ring, e.g., INSOCOAT) at NDE and a shaft grounding brush/ring at DE."
+  },
+  {
+    "id": "ATH-08",
+    "question": "How do you distinguish true brinelling impact indentations from false brinelling wear depressions?",
+    "fault_type": "outer_race",
+    "severity": "large",
+    "expected_guide": "skf-damage-failure-analysis",
+    "expected_page": 38,
+    "expected_chunk": "skf-damage-failure-analysis-p38-c1",
+    "answer_excerpt": "True brinelling indentations retain original grinding marks on the crater floor with raised shoulders/rims, whereas false brinelling shows polished/reddish fretting wear."
+  },
+  {
+    "id": "ATH-09",
+    "question": "Why must a grease relief plug be kept open when replenishing electric motor bearing grease?",
+    "fault_type": "normal",
+    "severity": "none",
+    "expected_guide": "electric-motor-bearing-guide",
+    "expected_page": 15,
+    "expected_chunk": "electric-motor-bearing-guide-p15-c1",
+    "answer_excerpt": "Run the motor with the drain plug open to allow excess grease to purge and prevent over-greasing fluid churning and thermal breakdown."
+  },
+  {
+    "id": "ATH-010",
+    "question": "What maximum angular misalignment is allowable across motor couplings at 1800 rpm to protect bearings?",
+    "fault_type": "outer_race",
+    "severity": "small",
+    "expected_guide": "electric-motor-bearing-guide",
+    "expected_page": 21,
+    "expected_chunk": "electric-motor-bearing-guide-p21-c1",
+    "answer_excerpt": "Laser alignment tolerance: Angular misalignment must not exceed 0.05 mm/100 mm; parallel offset must not exceed 0.05 mm for 1800 rpm motors."
+  },
+  {
+    "id": "ATH-011",
+    "question": "What mandatory safety precaution must be taken before touching motor couplings or removing bearing housing bolts?",
+    "fault_type": "outer_race",
+    "severity": "large",
+    "expected_guide": "electric-motor-bearing-guide",
+    "expected_page": 21,
+    "expected_chunk": "electric-motor-bearing-guide-p21-c1",
+    "answer_excerpt": "Full Lockout/Tagout (LOTO) of the main supply breaker and verify zero energy state with a calibrated voltage detector before loosening mechanical bolts."
+  },
+  {
+    "id": "ATH-012",
+    "question": "What physical evidence indicates an outer ring fit is too loose inside the pillow block housing seat?",
+    "fault_type": "outer_race",
+    "severity": "small",
+    "expected_guide": "schaeffler-bearing-damage",
+    "expected_page": 32,
+    "expected_chunk": "schaeffler-bearing-damage-p32-c1",
+    "answer_excerpt": "Reddish or blackish fretting corrosion products on the outer ring OD, localized oval distortion, or micro-movement wear."
+  }
+]
