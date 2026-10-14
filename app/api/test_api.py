@@ -17,8 +17,12 @@ client = TestClient(app)
 CONTRACT = Path(__file__).resolve().parents[2] / "docs" / "contract.md"
 
 
+def _contract_blocks():
+    return [json.loads(b) for b in re.findall(r"```json\n(.*?)```", CONTRACT.read_text(encoding="utf-8"), re.S)]
+
+
 def _contract_samples():
-    blocks = [json.loads(b) for b in re.findall(r"```json\n(.*?)```", CONTRACT.read_text(encoding="utf-8"), re.S)]
+    blocks = _contract_blocks()
     sensor = next(b for b in blocks if "probabilities" in b)
     final = next(b for b in blocks if "request_id" in b)
     return sensor, final
@@ -71,14 +75,15 @@ def test_signal():
 def test_analyze_matches_contract():
     sensor_sample, final_sample = _contract_samples()
     a = _analyze()
-    assert {k: v for k, v in a["sensor"].items() if k != "evidence"} == sensor_sample  # exact contract sample
+    without_evidence = lambda d: {k: v for k, v in d.items() if k != "evidence"}  # evidence is optional
+    assert without_evidence(a["sensor"]) == without_evidence(sensor_sample)  # exact contract sample
     assert set(a) == set(final_sample)
     assert set(a["meta"]) == set(final_sample["meta"])
     assert set(a["meta"]["latency_ms"]) == set(final_sample["meta"]["latency_ms"])
     assert set(a["uncertainty"]) == set(final_sample["uncertainty"])
     assert set(a["recommended_actions"][0]) == set(final_sample["recommended_actions"][0])
     assert set(a["citations"][0]) == set(final_sample["citations"][0])
-    assert set(a["sensor"]) - {"evidence"} == set(sensor_sample)  # evidence is the one optional extra
+    assert set(a["sensor"]) - {"evidence"} == set(sensor_sample) - {"evidence"}
 
 
 def test_every_recording_gives_a_consistent_answer():

@@ -17,3 +17,14 @@ def level(confidence: float) -> str:
     if confidence >= LOW_FROM:
         return "low"
     return "medium"
+
+
+NOTES = {
+    "high": "Low confidence ({pct}%). Treat this label as a hint only and arrange a manual inspection.",
+    "medium": "Moderate confidence ({pct}%). Confirm with a manual check before acting.",
+    "low": "High confidence ({pct}%) on lab-trained data. Confirm before acting on safety-critical steps.",
+}
+
+
+def note(lvl: str, confidence: float) -> str:
+    return NOTES[lvl].format(pct=round(confidence * 100))
