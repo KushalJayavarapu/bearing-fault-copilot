@@ -46,7 +46,7 @@ python -m sensor.evaluate --evidence         # regenerates sensor/results/eviden
 ```
 
 ## Checklist
-- [ ] Branch is up to date with `main`: not yet. This branch is built on top of #2. It will be rebased onto main (replaying only the new commits) once #2 merges.
+- [x] Branch is up to date with `main`: rebased onto main after #2 was squash-merged; only the 5 new commits were replayed.
 - [x] Follows the data contract in `docs/contract.md`: section 1 is updated at Kushal's request, the new field is optional, and nothing else changed.
 - [x] No secrets, raw data, source PDFs or model weights committed. Only the SHA-256 manifest (12 KB) describes the data.
 - [x] Works in mock mode (`MOCK_MODE=true` or `SENSOR_MOCK=1`); the mock matches the contract sample exactly (checked by `test_sensor`).
