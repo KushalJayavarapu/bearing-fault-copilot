@@ -6,10 +6,12 @@ Follow-up to #2, from Kushal's review. The model, features and headline numbers 
   - The healthy baseline is saved in the model file.
   - The mock returns one real outer race (BPFO) entry.
 - **`docs/contract.md` section 1 (changed at Kushal's request):**
-  - The sample JSON now includes `evidence`, with a field table.
+  - The section 1 sample JSON is unchanged (byte-identical to main). `evidence` is documented below it as a separate "Optional field: evidence" example, with a field table. This keeps `app/api/test_api.py` passing untouched (10 passed).
   - It is marked optional: a missing field means `[]`.
   - It notes that evidence can disagree with `fault_type` and that consumers should show the disagreement. No other part of the contract changed.
 - **`python -m sensor.build`:** downloads the 40 recordings and checks each file's size and SHA-256 against `sensor/cwru_manifest.json`. It resumes cut-off transfers, retries a bad hash 3 times, then stops loudly; a mismatched local file also stops the build. Then it trains. A rerun is a 0.2 s no-op. No data or models are committed.
+
+`app/api/uncertainty.py` (#3) has a TODO to import the thresholds from sensor config: it can now use `sensor.config`. I haven't touched `app/`.
 
 **Evidence on the held-out 3 hp windows:**
 
@@ -43,10 +45,11 @@ python -m sensor.build                       # downloads + verifies 40 files, tr
 python -m sensor.build                       # rerun: verifies and exits in well under a second
 python -m sensor.test_sensor                 # expect: mock ok x2, mock == contract sample, manifest ok, interface ok
 python -m sensor.evaluate --evidence         # regenerates sensor/results/evidence.md
+pip install -r app/api/requirements.txt pytest && python -m pytest -q app/api/test_api.py   # Kushal's API tests: 10 passed
 ```
 
 ## Checklist
-- [x] Branch is up to date with `main`: rebased onto main after #2 was squash-merged; only the 5 new commits were replayed.
+- [x] Branch is up to date with `main`: rebased onto main after #2 was squash-merged (only the new commits were replayed), and again after #3.
 - [x] Follows the data contract in `docs/contract.md`: section 1 is updated at Kushal's request, the new field is optional, and nothing else changed.
 - [x] No secrets, raw data, source PDFs or model weights committed. Only the SHA-256 manifest (12 KB) describes the data.
 - [x] Works in mock mode (`MOCK_MODE=true` or `SENSOR_MOCK=1`); the mock matches the contract sample exactly (checked by `test_sensor`).

@@ -8,7 +8,7 @@ Why: the team rule keeps data and weights out of git; the CWRU license is still 
 Measured on my laptop: the 40 files are 140.3 MB and took 281 s to download, because the CWRU server cuts every transfer after about 3 s and the downloader resumes. Training takes 5.5 s. The model files are 1.41 MB (demo, the default) and 1.81 MB. A rerun with everything in place is a 0.2 s no-op.
 The SHA-256 check matters: we already got truncated .mat files from those cut-off transfers. A file is now only accepted when its size and hash match the manifest; otherwise it retries 3 times and then stops the build loudly.
 For the Dockerfile: RUN python -m sensor.build at image build time, so the live demo never downloads anything.
-evidence is in docs/contract.md section 1 as you asked: optional, a missing field means [], and it can disagree with fault_type (5 of 1534 held-out windows), so please show the disagreement rather than hide it. Thresholds and uncertainty_level(confidence) are in sensor/config.py. predict() with evidence: median 88 ms (p95 108 ms) for meta.latency_ms.classifier.
+evidence is documented in docs/contract.md section 1, below the unchanged sample, so your test_api still passes (10 passed): optional, a missing field means [], and it can disagree with fault_type (5 of 1534 held-out windows), so please show the disagreement rather than hide it. Thresholds and uncertainty_level(confidence) are in sensor/config.py, so the TODO in app/api/uncertainty.py can import them from there; I haven't touched app/. predict() with evidence: median 88 ms (p95 108 ms) for meta.latency_ms.classifier.
 ```
 
 ## Team chat summary

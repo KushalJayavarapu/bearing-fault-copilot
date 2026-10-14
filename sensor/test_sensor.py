@@ -41,10 +41,12 @@ if __name__ == "__main__":
 
     from .mock import SAMPLE
     contract = Path(__file__).resolve().parent.parent / "docs" / "contract.md"
-    sample = json.loads(re.search(r"## 1\. Sensor result.*?```json\n(.*?)```", contract.read_text(encoding="utf-8"), re.S).group(1))
-    assert SAMPLE == sample, "mock SAMPLE differs from docs/contract.md section 1"
+    section1 = re.search(r"## 1\. Sensor result(.*?)\n## 2\.", contract.read_text(encoding="utf-8"), re.S).group(1)
+    sample, example = (json.loads(b) for b in re.findall(r"```json\n(.*?)```", section1, re.S))
+    assert {k: v for k, v in SAMPLE.items() if k != "evidence"} == sample, "mock differs from the section 1 sample"
+    assert {"evidence": SAMPLE["evidence"]} == example, "mock evidence differs from the section 1 evidence example"
     check_evidence(SAMPLE["evidence"])
-    print("mock == docs/contract.md section 1 sample")
+    print("mock == docs/contract.md section 1 sample + evidence example")
 
     from .data_loading import ALL_FILES, DATA_DIR, MANIFEST, RECORDINGS, verify
     assert {m["file"] for m in ALL_FILES.values()} == set(MANIFEST)

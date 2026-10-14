@@ -22,12 +22,19 @@ The agreed shape of the data passed between our parts. Kushal owns this file. A 
   "severity": "small",
   "confidence": 0.93,
   "probabilities": {"normal": 0.01, "inner_race": 0.02, "outer_race": 0.93, "ball": 0.04},
-  "context": {"sensor": "drive_end", "sample_rate_hz": 12000, "load_hp": 0, "rpm": 1797},
-  "evidence": [{"feature": "envelope_peak", "freq_hz": 105.5, "expected_hz": 107.3, "matches": "BPFO", "harmonic": 1, "vs_normal": 5.93, "strength": "high"}]
+  "context": {"sensor": "drive_end", "sample_rate_hz": 12000, "load_hp": 0, "rpm": 1797}
 }
 ```
 
 `fault_type` is one of `normal`, `inner_race`, `outer_race`, `ball`. `severity` is one of `none`, `small` (0.007 in), `medium` (0.014 in), `large` (0.021 in).
+
+### Optional field: evidence
+
+The sensor result may also carry `evidence`, for example for the sample above:
+
+```json
+{"evidence": [{"feature": "envelope_peak", "freq_hz": 105.5, "expected_hz": 107.3, "matches": "BPFO", "harmonic": 1, "vs_normal": 5.93, "strength": "high"}]}
+```
 
 `evidence` is **optional**. Consumers must treat a missing `evidence` field exactly like `[]`. It lists the measured fault-frequency peaks behind the window, strongest first. It is `[]` for healthy windows and for weak cases (no peak clears the threshold). It is computed from the signal, independently of the classifier, so it **can disagree with `fault_type`**. When it does, consumers should show the disagreement to the technician, not hide it. Each entry:
 
