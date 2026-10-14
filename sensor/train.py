@@ -11,7 +11,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
 from .data_loading import RECORDINGS, load_recording, windows
-from .features import FEATURE_NAMES, VARIANTS, extract
+from .features import FEATURE_NAMES, VARIANTS, envelope_peaks, extract
 
 SEED = 42
 FINAL_VARIANT = "+envelope"  # set ONLY from inner-CV selection (python -m sensor.evaluate --compare), never test folds
@@ -48,10 +48,22 @@ def fit(X, y_type, y_sev, variant=FINAL_VARIANT):
             "variant": variant, "cols": c}
 
 
+def normal_env_p99(loads):
+    """Healthy baseline for evidence(): 99th percentile, per fault frequency/harmonic, of the envelope peak/median
+    ratio over all Normal windows at the given loads."""
+    ratios = []
+    for hp in loads:
+        sig, rpm = load_recording(f"Normal_{hp}")
+        ratios.append(envelope_peaks(windows(sig), rpm)[0])
+    return np.percentile(np.concatenate(ratios), 99, axis=0)
+
+
 if __name__ == "__main__":
     X, y_type, y_sev, rec, load = build_dataset()
     print("dataset:", X.shape, dict(zip(*np.unique(y_type, return_counts=True))))
     MODEL_DIR.mkdir(exist_ok=True)
     for variant, keep in [("demo", load != DEMO_TEST_LOAD), ("all", np.ones(len(X), bool))]:
-        joblib.dump(fit(X[keep], y_type[keep], y_sev[keep]), MODEL_PATHS[variant], compress=3)
+        m = fit(X[keep], y_type[keep], y_sev[keep])
+        m["normal_env_p99"] = normal_env_p99(sorted(set(load[keep])))
+        joblib.dump(m, MODEL_PATHS[variant], compress=3)
         print(f"saved {variant}: {keep.sum()} windows -> {MODEL_PATHS[variant]} ({MODEL_PATHS[variant].stat().st_size / 1e6:.1f} MB)")

@@ -7,6 +7,7 @@ Windows of one recording are never split across train and test.
 
 python -m sensor.evaluate            report for FINAL_VARIANT -> results/results.md + confusion_lolo.png
 python -m sensor.evaluate --compare  all feature variants side by side + inner-CV selection -> results/variants.md
+python -m sensor.evaluate --evidence  evidence() threshold sweep + held-out non-empty rates -> results/evidence.md
 python -m sensor.evaluate --bands     accuracy per confidence band (for uncertainty.level) -> results/confidence_bands.md
 python -m sensor.evaluate --or-positions  outer race @3/@12 o'clock (unseen bearings) -> results/or_positions.md
 python -m sensor.evaluate --ttd      time-to-detect on the held-out demo recordings -> results/time_to_detect.md
@@ -123,6 +124,67 @@ def confidence_bands(X, y_type, y_sev, rec, load, cuts=(HIGH_UNCERTAINTY_BELOW, 
     print(md)
 
 
+def evidence_report(thresholds=(1.0, 1.5, 2.0, 2.5, 3.0, 4.0)):
+    """How often evidence() is non-empty, and whether its strongest peak names the true fault family.
+    Threshold chosen on training loads 0/1/2 (demo model baseline); held-out 3 hp reported before/after."""
+    import joblib
+    from .config import EVIDENCE_MIN_VS_NORMAL
+    from .data_loading import load_recording, windows
+    from .predict import window_evidence
+    from .train import DEMO_TEST_LOAD, MODEL_PATHS
+    ref = joblib.load(MODEL_PATHS["demo"])["normal_env_p99"]
+    family = {"inner_race": "BPFI", "outer_race": "BPFO", "ball": "BSF"}
+
+    def rates(rids, t):
+        top = []
+        for rid in rids:
+            sig, rpm = load_recording(rid)
+            for w in windows(sig):
+                ev = window_evidence(w, rpm, ref, t)
+                top.append(ev[0]["matches"] if ev else None)
+        true = family.get(RECORDINGS[rids[0]]["fault_type"])
+        top = np.array(top, dtype=object)
+        ne = top != None  # noqa: E711 (elementwise)
+        return ne.mean(), np.mean(ne & (top == true)), np.mean(ne & (top != true))
+
+    conds = list(dict.fromkeys(m["condition"] for m in RECORDINGS.values()))
+    lines = ["### evidence(): non-empty rate and strongest-peak family", "",
+             "Cells: % windows non-empty / strongest peak = true family / strongest peak = wrong family.", "",
+             "#### Threshold sweep on training loads 0/1/2 (used to choose EVIDENCE_MIN_VS_NORMAL)", "",
+             "| condition | " + " | ".join(f"T = {t:g}" for t in thresholds) + " |", "|---" * (len(thresholds) + 1) + "|"]
+    worst = {t: 0.0 for t in thresholds}
+    for c in conds:
+        rids = [r for r, m in RECORDINGS.items() if m["condition"] == c and m["load_hp"] != DEMO_TEST_LOAD]
+        cells = []
+        for t in thresholds:
+            ne, right, wrong = rates(rids, t)
+            worst[t] = max(worst[t], wrong)
+            cells.append(f"{ne:.0%} / {right:.0%} / {wrong:.0%}")
+        lines.append(f"| {c} | " + " | ".join(cells) + " |")
+    lines.append("| **worst wrong-family rate** | " + " | ".join(f"**{worst[t]:.0%}**" for t in thresholds) + " |")
+    chosen = min(t for t in thresholds if worst[t] <= 0.05)
+    lines += ["", f"Rule: smallest T with wrong-family rate <= 5% for every condition -> **{chosen:g}** "
+              f"(configured EVIDENCE_MIN_VS_NORMAL = {EVIDENCE_MIN_VS_NORMAL:g}).", "",
+              f"#### Held-out 3 hp windows, before (T = 1) and after (T = {EVIDENCE_MIN_VS_NORMAL:g})", "",
+              "| fault type | recordings | windows | non-empty before | non-empty after | right family after | wrong family after |",
+              "|---|---|---|---|---|---|---|"]
+    for ft in FAULT_TYPES:
+        rows = []
+        for c in conds:
+            rid = f"{c}_{DEMO_TEST_LOAD}"
+            if RECORDINGS[rid]["fault_type"] == ft:
+                n = len(windows(load_recording(rid)[0]))
+                rows.append((rid, n, rates([rid], 1.0)[0], *rates([rid], EVIDENCE_MIN_VS_NORMAL)))
+        for rid, n, before, ne, right, wrong in rows:
+            lines.append(f"| {ft} | {rid} | {n} | {before:.1%} | {ne:.1%} | {right:.1%} | {wrong:.1%} |")
+        tot = sum(r[1] for r in rows)
+        avg = [sum(r[1] * r[k] for r in rows) / tot for k in (2, 3, 4, 5)]
+        lines.append(f"| **{ft}** | **all** | **{tot}** | **{avg[0]:.1%}** | **{avg[1]:.1%}** | **{avg[2]:.1%}** | **{avg[3]:.1%}** |")
+    md = "\n".join(lines)
+    (RESULTS / "evidence.md").write_text(md + "\n", newline="\n")
+    print(md)
+
+
 def or_positions():
     """All-data model (trained on @6 only) on outer race faults at 3 and 12 o'clock: bearings it never saw."""
     import joblib
@@ -193,6 +255,10 @@ if __name__ == "__main__":
     X, y_type, y_sev, rec, load = build_dataset()
     all_idx = np.arange(len(X))
     print("dataset:", X.shape)
+
+    if "--evidence" in sys.argv:
+        evidence_report()
+        sys.exit()
 
     if "--bands" in sys.argv:
         confidence_bands(X, y_type, y_sev, rec, load)

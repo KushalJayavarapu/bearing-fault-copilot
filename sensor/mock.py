@@ -11,6 +11,9 @@ SAMPLE = {
     "confidence": 0.93,
     "probabilities": {"normal": 0.01, "inner_race": 0.02, "outer_race": 0.93, "ball": 0.04},
     "context": {"sensor": "drive_end", "sample_rate_hz": 12000, "load_hp": 0, "rpm": 1797},
+    # real evidence() output for OR007@6_0 window 12 (strongest entry)
+    "evidence": [{"feature": "envelope_peak", "freq_hz": 105.5, "expected_hz": 107.3, "matches": "BPFO", "harmonic": 1,
+                  "vs_normal": 5.93, "strength": "high"}],
 }
 
 
