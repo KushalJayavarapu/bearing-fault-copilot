@@ -9,6 +9,8 @@
 data/raw/
 data/processed/
 data/cache/
+data/cwru/
+data/guides/
 data/**/*.pdf
 *.mat
 

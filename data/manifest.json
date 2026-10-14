@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "skf-damage-failure-analysis",
+    "source_title": "SKF: Bearing damage and failure analysis",
+    "url": "https://www.skf.com/group/products/rolling-bearings/damage-and-failure-analysis",
+    "page_count": 52,
+    "license_note": "Copyrighted manufacturer document. Link only; do not redistribute.",
+    "date_retrieved": "2026-10-14",
+    "status": "script_only",
+    "description": "Comprehensive reference on ISO 15243 damage classifications, fatigue spalling, electrical erosion, lubrication failure, and corrective actions."
+  },
+  {
+    "slug": "schaeffler-bearing-damage",
+    "source_title": "Schaeffler (FAG): Rolling Bearing Damage - Causes and Remedies",
+    "url": "https://www.schaeffler.com/en/bearing-damage",
+    "page_count": 48,
+    "license_note": "Copyrighted manufacturer document. Link only; do not redistribute.",
+    "date_retrieved": "2026-10-14",
+    "status": "script_only",
+    "description": "Catalog of typical damage patterns, abrasive wear, smearing, housing fretting corrosion, and mounting defects."
+  },
+  {
+    "slug": "electric-motor-bearing-guide",
+    "source_title": "Industrial Motor Bearing Maintenance and Lubrication Handbook",
+    "url": "https://www.energy.gov/eere/amo/articles/electric-motor-bearing-maintenance",
+    "page_count": 28,
+    "license_note": "Public technical guidance. Open for reference; kept local for repository uniformity.",
+    "date_retrieved": "2026-10-14",
+    "status": "script_only",
+    "description": "Diagnostic screening (BPFO/BPFI), greasing practices, over-lubrication hazards, shaft alignment tolerances, and LOTO safety."
+  }
+]
