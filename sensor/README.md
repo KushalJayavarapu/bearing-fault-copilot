@@ -36,6 +36,14 @@ python -m sensor.predict "OR007@6_3" 58    # print one sensor result
 
 Mock mode needs no data and no model: set `MOCK_MODE=true` (team `.env.example`) or `SENSOR_MOCK=1`.
 
+## Data source, terms and citation
+
+- **Source:** Case Western Reserve University Bearing Data Center, https://engineering.case.edu/bearingdatacenter
+  (files downloaded from https://engineering.case.edu/bearingdatacenter/download-data-file), accessed October 2026.
+- **Terms:** We found no dataset license on the Bearing Data Center site (checked 14 Oct 2026). The data is used here with attribution and is not redistributed: this repo contains only a download script and a SHA-256 manifest, and Docker images that contain the data must not be pushed to a public registry.
+- **Citation for proper use of the data:** W. A. Smith and R. B. Randall, "Rolling element bearing diagnostics using the Case Western Reserve University data: A benchmark study," *Mechanical Systems and Signal Processing*, vol. 64–65, pp. 100–131, 2015, doi:10.1016/j.ymssp.2015.04.021 (title, authors, volume and pages checked against the DOI on Crossref).
+- **Honest limits:** lab test rig with faults seeded by electro-discharge machining (EDM), not a factory.
+
 ## Getting the model and data
 
 `python -m sensor.build` is the one command. It needs no manual steps:
@@ -61,6 +69,28 @@ Data and models are never committed:
 - The build is deterministic (seed 42), so a rebuild gives the same model.
 
 **Dockerfile:** run `python -m sensor.build` at image build time (`RUN python -m sensor.build`). The image then already contains the data and models, so the live demo never downloads anything at startup.
+
+**Runtime data:** with the default demo model:
+- `predict()` and `get_window()` open only the requested recording's `.mat` plus `sensor_model_demo.joblib`. The healthy baseline for evidence is inside the model file.
+- `list_recordings()` lists only the recordings whose file is present.
+- A recording that isn't present raises a clear `FileNotFoundError`.
+
+So a runtime image needs only the demo model (1.41 MB) and the 10 held-out 3 hp recordings (34.2 MB), instead of all 40 (140.3 MB). `python -m sensor.build --runtime-only DIR` copies those 10 files into `DIR`, hash-checked. A multi-stage Dockerfile could look like this (for Karthiik; this is not the project's Dockerfile):
+
+```dockerfile
+FROM python:3.13-slim AS builder
+WORKDIR /app
+COPY sensor/ sensor/
+RUN pip install -r sensor/requirements.txt && python -m sensor.build && python -m sensor.build --runtime-only /runtime-data
+
+FROM python:3.13-slim
+WORKDIR /app
+COPY sensor/ sensor/
+RUN pip install -r sensor/requirements.txt
+COPY --from=builder /app/sensor/models/sensor_model_demo.joblib sensor/models/
+COPY --from=builder /runtime-data/ data/raw/cwru/
+# contains CWRU data: never push this image to a public registry
+```
 
 Other pieces:
 - The stretch-test files (outer race @3/@12 o'clock) come from `python -m sensor.data_loading --download`, which downloads all 56 files with the same checks.

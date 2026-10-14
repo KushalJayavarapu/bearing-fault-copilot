@@ -15,7 +15,18 @@ assert len(list_recordings()) == 40 and len(get_window('x', 0)['samples']) == 20
 w = get_window('x', 0, max_points=500)
 assert len(w['samples']) <= 500 and w['sample_rate_hz'] == 12000 / 5
 """
-EVIDENCE_KEYS = {"feature", "freq_hz", "expected_hz", "matches", "harmonic", "vs_normal", "strength"}
+RUNTIME_CHECK = """
+from sensor.predict import list_recordings, predict, get_window
+recs = list_recordings()
+assert len(recs) == 10 and all(r['held_out'] and r['load_hp'] == 3 for r in recs)
+assert predict('OR007@6_3', 58)['evidence'][0]['matches'] == 'BPFO' and len(get_window('Normal_3', 0)['samples']) == 2048
+try:
+    get_window('IR007_0', 0)
+    raise AssertionError('missing recording should raise')
+except FileNotFoundError:
+    pass
+"""
+EVIDENCE_KEYS ={"feature", "freq_hz", "expected_hz", "matches", "harmonic", "vs_normal", "strength"}
 
 
 def check_evidence(ev):
@@ -52,6 +63,13 @@ if __name__ == "__main__":
     assert {m["file"] for m in ALL_FILES.values()} == set(MANIFEST)
     assert all(verify(DATA_DIR / f"{m['file']}.mat", m["file"]) is None for m in RECORDINGS.values())
     print("40 recordings match cwru_manifest.json")
+
+    import tempfile
+    from .build import runtime_only
+    with tempfile.TemporaryDirectory() as tmp:  # runtime image: demo model + only the 10 held-out recordings
+        runtime_only(Path(tmp))
+        subprocess.run([sys.executable, "-c", RUNTIME_CHECK], check=True, env=os.environ | {"SENSOR_DATA_DIR": tmp})
+    print("runtime-only data (10 held-out files): list/predict/get_window ok, missing recording raises FileNotFoundError")
 
     from .predict import evidence, get_window, list_recordings, predict
     recs = list_recordings()

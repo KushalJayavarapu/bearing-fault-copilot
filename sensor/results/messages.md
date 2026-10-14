@@ -11,6 +11,14 @@ For the Dockerfile: RUN python -m sensor.build at image build time, so the live 
 evidence is documented in docs/contract.md section 1, below the unchanged sample, so your test_api still passes (10 passed): optional, a missing field means [], and it can disagree with fault_type (5 of 1534 held-out windows), so please show the disagreement rather than hide it. Thresholds and uncertainty_level(confidence) are in sensor/config.py, so the TODO in app/api/uncertainty.py can import them from there; I haven't touched app/. predict() with evidence: median 88 ms (p95 108 ms) for meta.latency_ms.classifier.
 ```
 
+## Reply to Kushal: data and licence
+
+```text
+Data and licence: the CWRU Bearing Data Center pages have no dataset license or terms of use (checked 14 Oct 2026), only a site-wide copyright footer and generic university website terms. So we use the data with attribution but don't redistribute it: the repo has only the download script and the SHA-256 manifest, and any Docker image that contains the data must not go to a public registry.
+At runtime, the demo model needs only the model file (1.41 MB) and the 10 held-out 3 hp recordings (34.2 MB); the healthy baseline is inside the model file. python -m sensor.build --runtime-only DIR copies just those 10, hash-checked, so the final image stage can copy the model plus DIR. list_recordings() then lists only those 10, and any other recording raises a clear FileNotFoundError.
+The source, terms and citation (Smith and Randall 2015, MSSP 64-65:100-131, doi:10.1016/j.ymssp.2015.04.021, checked against the DOI) are now in sensor/README.md.
+```
+
 ## Team chat summary
 
 ```text
