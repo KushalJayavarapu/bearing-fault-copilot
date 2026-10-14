@@ -180,6 +180,46 @@ def evidence_report(thresholds=(1.0, 1.5, 2.0, 2.5, 3.0, 4.0)):
         tot = sum(r[1] for r in rows)
         avg = [sum(r[1] * r[k] for r in rows) / tot for k in (2, 3, 4, 5)]
         lines.append(f"| **{ft}** | **all** | **{tot}** | **{avg[0]:.1%}** | **{avg[1]:.1%}** | **{avg[2]:.1%}** | **{avg[3]:.1%}** |")
+
+    # Precision and disagreement with the classifier (demo model) on the held-out windows, at the configured threshold.
+    m = joblib.load(MODEL_PATHS["demo"])
+    from .features import extract
+    lines += ["", f"#### Held-out 3 hp windows: precision and disagreement with the classifier (T = {EVIDENCE_MIN_VS_NORMAL:g}, demo model)", "",
+              "Precision = among windows with non-empty evidence, strongest peak names the true fault family. "
+              "Disagreement = evidence non-empty and its strongest peak names a different family than the classifier's fault_type "
+              "(a classifier call of normal with non-empty evidence counts as disagreement).", "",
+              "| fault type | windows | evidence non-empty | precision | disagreement (of all windows) | disagreement (of non-empty) |",
+              "|---|---|---|---|---|---|"]
+    per_window = {}
+    for ft in FAULT_TYPES:
+        n = ne = right = dis = 0
+        for c in conds:
+            rid = f"{c}_{DEMO_TEST_LOAD}"
+            if RECORDINGS[rid]["fault_type"] != ft:
+                continue
+            sig, rpm = load_recording(rid)
+            w = windows(sig)
+            pred = m["fault_type"].predict(extract(w, rpm)[:, m["cols"]])
+            for i, (win, p) in enumerate(zip(w, pred)):
+                ev = window_evidence(win, rpm, ref)
+                per_window[(rid, i)] = (str(p), ev)
+                n += 1
+                if ev:
+                    ne += 1
+                    right += ev[0]["matches"] == family.get(ft)
+                    dis += ev[0]["matches"] != family.get(str(p))
+        prec = f"{right / ne:.1%} ({right}/{ne})" if ne else "n/a (0 non-empty)"
+        dis_ne = f"{dis / ne:.1%} ({dis}/{ne})" if ne else "n/a"
+        lines.append(f"| {ft} | {n} | {ne / n:.1%} ({ne}) | {prec} | {dis / n:.1%} ({dis}) | {dis_ne} |")
+
+    # The uncertain demo pick (results/demo_picks.md): OR014@6_3 windows 111-115.
+    lines += ["", "#### OR014@6_3 (uncertain demo pick, true fault outer_race), windows 111-115", "",
+              "| window | classifier fault_type | evidence |", "|---|---|---|"]
+    for i in range(111, 116):
+        p, ev = per_window[("OR014@6_3", i)]
+        lines.append(f"| {i} | {p} | {[(e['matches'], e['harmonic'], e['vs_normal']) for e in ev] or '[]'} |")
+    ne_all = sum(1 for (rid, _), (_, ev) in per_window.items() if rid == "OR014@6_3" and ev)
+    lines.append(f"\nAll {sum(1 for rid, _ in per_window if rid == 'OR014@6_3')} OR014@6_3 windows: evidence non-empty in {ne_all}.")
     md = "\n".join(lines)
     (RESULTS / "evidence.md").write_text(md + "\n", newline="\n")
     print(md)

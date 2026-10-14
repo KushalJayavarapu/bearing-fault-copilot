@@ -55,11 +55,11 @@ if __name__ == "__main__":
         pred, conf = wt["demo"]
         evs = [evidence(rid, i) for i in range(r["n_windows"])]
         tops = [top_env(e) for e in evs]
-        env_match = np.array([t is not None and t["strength"] != "low" and t["matches"] == FAMILY.get(true) for t in tops])
-        strong = np.array([t is not None and t["strength"] == "high" and t["matches"] == FAMILY.get(true) for t in tops])
-        good = (pred == true) & (conf >= LOW) & strong
+        env_match = np.array([t is not None and t["matches"] == FAMILY.get(true) for t in tops])
+        disagree = sum(t is not None and t["matches"] != FAMILY.get(str(p)) for t, p in zip(tops, pred))
+        good = (pred == true) & (conf >= LOW) & env_match
         rows.append((rid, true, r["n_windows"], np.mean(pred == true), conf.mean(), np.mean(conf < HIGH),
-                     np.mean(env_match) if true in FAMILY else float("nan"),
+                     np.mean([t is not None for t in tops]), np.mean(env_match) if true in FAMILY else float("nan"), disagree,
                      ", ".join(f"{c}:{n}" for c, n in zip(*np.unique(pred, return_counts=True)))))
         if true in ("inner_race", "outer_race"):
             hero_cands.append((good.mean(), rid, longest_run(good)))
@@ -67,9 +67,10 @@ if __name__ == "__main__":
     lines = ["# Demo picks (held-out 3 hp recordings, demo model never trained on them)", "",
              "Reproduce: `python -m sensor.demo_picks`. Window = 2048 samples (0.171 s); window i starts at i x 1024 samples.", "",
              "## All held-out recordings (window level, demo model)", "",
-             f"| recording | true | windows | acc | mean conf | % conf < {HIGH:g} | strongest envelope peak = true family (>= medium) | predictions |",
-             "|---|---|---|---|---|---|---|---|"]
-    lines += [f"| {a} | {b} | {c} | {d:.3f} | {e:.3f} | {f:.1%} | {'n/a' if np.isnan(g) else f'{g:.1%}'} | {h} |" for a, b, c, d, e, f, g, h in rows]
+             f"| recording | true | windows | acc | mean conf | % conf < {HIGH:g} | evidence non-empty | strongest peak = true family | evidence disagrees with prediction (windows) | predictions |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
+    lines += [f"| {a} | {b} | {c} | {d:.3f} | {e:.3f} | {f:.1%} | {ne:.1%} | {'n/a' if np.isnan(g) else f'{g:.1%}'} | {dis} | {h} |"
+              for a, b, c, d, e, f, ne, g, dis, h in rows]
 
     lines += ["", "## Demo model vs all-data model on the same 1534 held-out windows", "",
               f"| model | trained on | acc | mean conf | % conf == 1.0 | % conf < {HIGH:g} |", "|---|---|---|---|---|---|"]
@@ -84,7 +85,7 @@ if __name__ == "__main__":
                 f"- prediction: **{p['fault_type']} / {p['severity']}**, confidence **{p['confidence']}**, probabilities {json.dumps(p['probabilities'])}",
                 f"- evidence: `{json.dumps(ev[:2])}`", ""]
 
-    lines += ["", f"## Hero picks (correct, uncertainty level low: confidence >= {LOW:g}, strongest envelope peak = true fault family at high strength)", "",
+    lines += ["", f"## Hero picks (correct, uncertainty level low: confidence >= {LOW:g}, evidence non-empty with strongest peak = true fault family)", "",
               "Ranked by the share of windows meeting all three; window range = longest consecutive run.", ""]
     hero_cands.sort(reverse=True)
     best_ir = next(h for h in hero_cands if h[1].startswith("IR"))
