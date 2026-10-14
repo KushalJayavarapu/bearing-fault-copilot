@@ -1,35 +1,55 @@
 ## What changed
-Adds the sensor fault classifier under `sensor/`. It takes a CWRU 12 kHz drive-end window and returns the sensor result from `docs/contract.md` section 1. It also provides `list_recordings()`, `get_window(..., max_points=)` and `evidence()`, plus mock mode, the fair-split evaluation and the results in `sensor/results/summary.md`.
+Follow-up to #2, from Kushal's review. The model, features and headline numbers are unchanged.
+- **Uncertainty bands:** `HIGH_UNCERTAINTY_BELOW = 0.60` and `LOW_UNCERTAINTY_AT_OR_ABOVE = 0.95` plus `uncertainty_level(confidence)` now live in `sensor/config.py`, and no other code hardcodes them. The 0.60 cut-off comes from the task brief. The 0.95 cut-off was chosen by looking at the held-out folds, so accuracy in the medium and low bands is slightly optimistic. The headline model numbers are unaffected.
+- **Optional `evidence` field** in the sensor result: envelope-spectrum peaks at BPFI/BPFO/BSF, from the recording's rpm.
+  - It is `[]` for healthy windows and weak cases. Weak means `vs_normal < EVIDENCE_MIN_VS_NORMAL = 2.5`, chosen on training loads 0/1/2 only.
+  - The healthy baseline is saved in the model file.
+  - The mock returns one real outer race (BPFO) entry.
+- **`docs/contract.md` section 1 (changed at Kushal's request):**
+  - The sample JSON now includes `evidence`, with a field table.
+  - It is marked optional: a missing field means `[]`.
+  - It notes that evidence can disagree with `fault_type` and that consumers should show the disagreement. No other part of the contract changed.
+- **`python -m sensor.build`:** downloads the 40 recordings and checks each file's size and SHA-256 against `sensor/cwru_manifest.json`. It resumes cut-off transfers, retries a bad hash 3 times, then stops loudly; a mismatched local file also stops the build. Then it trains. A rerun is a 0.2 s no-op. No data or models are committed.
 
-**Headline:** 99.0% fault_type accuracy (macro-F1 0.989, severity 97.7%) at a motor load the model never saw, vs 27.7% for always guessing the majority class.
+**Evidence on the held-out 3 hp windows:**
 
-**Caveats:**
-- CWRU reuses one physical bearing per fault across loads, and normal is one bearing too. On bearings the model never saw, accuracy is 40-100% depending on fault and size.
-- `evidence()` is weak for ball faults.
+| fault type | non-empty | precision (strongest peak = true family) | disagrees with classifier |
+|---|---|---|---|
+| normal | 0.0% | n/a | 0 |
+| inner race | 67.2% | 100.0% (238/238) | 0 |
+| outer race | 58.8% | 98.1% (204/208) | 4 windows |
+| ball | 4.5% | 93.8% (15/16) | 1 window |
+
+OR014@6_3, the uncertain demo pick, returns `[]` in all 118 windows.
+
+**Measured on a laptop:**
+- Downloading the 40 files (140.3 MB) takes 281 s; training takes 5.5 s.
+- The model files are 1.41 MB and 1.81 MB.
+- `predict()` with evidence takes a median 88 ms (p95 108 ms).
+
+**Caveats (unchanged):**
+- The 99.0% headline is at an unseen motor load. On bearings the model never saw, accuracy is 40-100%.
+- Normal is a single bearing.
+- Evidence rarely backs ball faults.
 - The data comes from a lab rig with EDM-cut faults.
 
-Contract: section 1 is unchanged and matches field by field. Two optional additions are proposed to Kushal in chat (an uncertainty.level mapping and an `evidence` field); neither is in the JSON yet.
-The 0.60 cut-off comes from the task brief. The 0.95 cut-off was chosen by looking at the held-out folds, so accuracy in the medium and low bands is slightly optimistic. The headline model numbers are unaffected.
-
-Root files are untouched. The only file outside sensor code is the replacement of the `sensor/README.md` placeholder.
-
 ## How to test
-From the repo root:
+From the repo root (Git Bash; see `sensor/README.md` for PowerShell):
 ```bash
-python -m venv .venv && source .venv/Scripts/activate   # PowerShell: .venv\Scripts\Activate.ps1, Linux/macOS: source .venv/bin/activate
+python -m venv .venv && source .venv/Scripts/activate
 pip install -r sensor/requirements.txt
-MOCK_MODE=true python -m sensor.predict                 # mock: prints the contract sample, no data or model needed
-python -m sensor.data_loading --download                # 56 files, 179 MB -> data/raw/cwru/ (gitignored)
-python -m sensor.train                                  # about 5 s, models -> sensor/models/ (gitignored)
-python -m sensor.test_sensor                            # expect: "mock ok" x2, then "interface ok" with timings
-python -m sensor.evaluate                               # regenerates sensor/results/results.md; numbers should match
+MOCK_MODE=true python -m sensor.predict      # mock with no data or model: contract sample including evidence
+python -m sensor.build                       # downloads + verifies 40 files, trains (~5 min first time)
+python -m sensor.build                       # rerun: verifies and exits in well under a second
+python -m sensor.test_sensor                 # expect: mock ok x2, mock == contract sample, manifest ok, interface ok
+python -m sensor.evaluate --evidence         # regenerates sensor/results/evidence.md
 ```
 
 ## Checklist
-- [x] Branch is up to date with `main`
-- [x] Follows the data contract in `docs/contract.md` (section 1 unchanged; proposed optional additions announced to Kushal, not merged)
-- [x] No secrets, raw data, source PDFs or model weights committed (`.mat` and models are gitignored; largest committed file is the 37 KB confusion matrix PNG)
-- [x] Works in mock mode (`MOCK_MODE=true` or `SENSOR_MOCK=1`)
-- [ ] Small enough to review in about 10 minutes: no. It is the whole sensor folder in one PR, split into small commits by step. Review commit by commit; the interface is in `sensor/predict.py` and the numbers are in `sensor/results/summary.md`.
+- [ ] Branch is up to date with `main`: not yet. This branch is built on top of #2. It will be rebased onto main (replaying only the new commits) once #2 merges.
+- [x] Follows the data contract in `docs/contract.md`: section 1 is updated at Kushal's request, the new field is optional, and nothing else changed.
+- [x] No secrets, raw data, source PDFs or model weights committed. Only the SHA-256 manifest (12 KB) describes the data.
+- [x] Works in mock mode (`MOCK_MODE=true` or `SENSOR_MOCK=1`); the mock matches the contract sample exactly (checked by `test_sensor`).
+- [x] Small enough to review in about 10 minutes: one commit per step.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

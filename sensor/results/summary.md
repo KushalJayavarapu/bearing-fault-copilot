@@ -14,7 +14,7 @@ Always guessing the most common class gets 27.7%.
 
 1. **Same bearing across loads.** CWRU uses one damaged bearing per condition at all 4 loads, so leave-one-load-out tests a known bearing at a new load, not a new bearing.
 2. **Normal is one bearing too.** Leave-one-size-out therefore only tests generalisation for the fault classes.
-3. **Weak evidence for ball faults.** `evidence()` finds the ball-spin-frequency peak in 0-67% of ball windows (and 0% for OR014@6). Inner race and the other outer race sizes are 97-100%.
+3. **Little evidence for ball faults.** `evidence` is empty for 95.5% of held-out ball windows and for every OR014@6 window (section 10). When it is non-empty it is right 93.8-100% of the time.
 4. **Lab rig with EDM faults.** The faults were cut on purpose by spark machining on a test rig. This is realistic vibration data, not factory data.
 5. **No window leakage.** Every split keeps all windows of a recording on one side (asserted in code). Any tuning used only training loads.
 
@@ -86,6 +86,15 @@ Same 1534 demo windows, two models:
 
 Per-recording stats and the demo picks with window ranges: [demo_picks.md](demo_picks.md).
 
+| demo pick | recording | windows | shows |
+|---|---|---|---|
+| Hero 1 (inner race) | IR021_3 | 0-68 | inner_race / large, confidence 0.993 (level low), evidence BPFI 158.2 Hz (expected 156.0), vs_normal 3.43 |
+| Hero 2 (outer race) | OR007@6_3 | 0-117 | outer_race / small, confidence 0.997 (level low), evidence BPFO 105.5 Hz (expected 103.1), vs_normal 6.14, plus BPFO 2x |
+| Hero 3 (outer race) | OR021@6_3 | 56-71 | outer_race / large, confidence 1.0 (level low), evidence BPFO 105.5 Hz (expected 102.8), vs_normal 3.21 |
+| Uncertain | OR014@6_3 | 111-115 | window 114: ball / medium, confidence 0.507 (level high, and wrong: true fault is outer race), evidence `[]` |
+
+The heroes are the longest runs that are correct, at uncertainty level low (confidence ≥ 0.95), and backed by evidence naming the true fault family.
+
 ## 6. Feature variants (chosen by inner CV only)
 
 | variant | features | LOLO acc | LOLO macro-F1 | LOLO severity | size-out acc small / medium / large | size-out acc mean | size-out macro-F1 mean | inner-CV score (loads 0/1/2) |
@@ -133,9 +142,27 @@ The 3 misses are on OR014@6_3, where only 69.5% of windows are correct and the ~
 ## 9. Speed
 
 Laptop CPU, 300 warm calls on demo windows:
-- `predict()`: median 84 ms, p95 132 ms. The first call takes about 250 ms because it loads the model and the .mat file.
-- `evidence()`: median 2.1 ms.
-- Training both models: about 5 s.
+- `predict()` (evidence included): median 88 ms, p95 108 ms; first call 120 ms.
+- `python -m sensor.build` from nothing: downloading the 40 files (140.3 MB) takes 281 s and training both models takes 5.5 s. A rerun with everything present takes 0.2 s.
+- Model files: 1.41 MB (demo) and 1.81 MB (all).
+
+## 10. Evidence (optional field)
+
+`evidence` lists the envelope-spectrum peaks at BPFI/BPFO/BSF x1-3 whose `vs_normal` is ≥ 2.5 (`EVIDENCE_MIN_VS_NORMAL`). The definitions are in docs/contract.md section 1; full tables are in [evidence.md](evidence.md).
+**The threshold was chosen on training loads 0/1/2 only:** it is the smallest value where, for every condition, at most 5% of windows get a strongest peak from the wrong fault family. The worst case is 3% at 2.5, against 20% at 2.0. It was fixed before looking at the held-out windows below and was not changed after.
+
+Held-out 3 hp windows, demo model:
+
+| fault type | windows | non-empty before (T = 1) | non-empty after (T = 2.5) | precision (strongest peak = true family) | disagrees with classifier |
+|---|---|---|---|---|---|
+| normal | 473 | 1.7% | 0.0% | n/a | 0 |
+| inner race | 354 | 100.0% | 67.2% | 100.0% (238/238) | 0 |
+| outer race | 354 | 80.2% | 58.8% | 98.1% (204/208) | 4 windows (1.9% of non-empty) |
+| ball | 353 | 90.4% | 4.5% | 93.8% (15/16) | 1 window (6.2% of non-empty) |
+
+- **Empty cases:** IR014_3 drops to 0.9% non-empty, OR014@6_3 and B007_3 to 0%, and B021_3 to 0.8%.
+- **OR014@6_3 (the uncertain demo pick):** evidence is `[]` in all 118 windows, including windows 111-115.
+- **Disagreement:** evidence is reported as measured even when it disagrees with `fault_type` (5 of 1534 held-out windows). Consumers should show that to the technician.
 
 ## Seed, splits, reproduce
 
@@ -150,8 +177,8 @@ Laptop CPU, 300 warm calls on demo windows:
 python -m venv .venv
 # activate: Git Bash  source .venv/Scripts/activate | PowerShell  .venv\Scripts\Activate.ps1 | Linux/macOS  source .venv/bin/activate
 pip install -r sensor/requirements.txt
-python -m sensor.data_loading --download   # 56 files -> data/raw/cwru/
-python -m sensor.train                     # models -> sensor/models/
+python -m sensor.build                     # 40 verified files -> data/raw/cwru/, models -> sensor/models/
+python -m sensor.data_loading --download   # adds the 16 stretch-test files for section 4
 python -m sensor.test_sensor               # self-check
 python -m sensor.evaluate                  # sections 1-3 -> results.md, confusion_lolo.png
 python -m sensor.evaluate --or-positions   # section 4 -> or_positions.md
@@ -159,4 +186,5 @@ python -m sensor.demo_picks                # section 5 -> demo_picks.md
 python -m sensor.evaluate --compare        # section 6 -> variants.md
 python -m sensor.evaluate --bands          # section 7 -> confidence_bands.md
 python -m sensor.evaluate --ttd            # section 8 -> time_to_detect.md
+python -m sensor.evaluate --evidence       # section 10 -> evidence.md
 ```
