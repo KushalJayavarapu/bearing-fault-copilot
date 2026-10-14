@@ -3,7 +3,7 @@
     from sensor.predict import predict, list_recordings, get_window
     predict("OR007@6_0", 12)  -> sensor result dict (data contract shape)
 
-SENSOR_MOCK=1 returns the contract sample without data or models.
+Mock mode (team MOCK_MODE=true from .env.example, or SENSOR_MOCK=1) returns the contract sample without data or models.
 SENSOR_MODEL=demo (default) uses the model trained on loads 0/1/2: demo from recordings with held_out=True.
 SENSOR_MODEL=all uses the model trained on all 40 recordings (every prediction in-sample).
 """
@@ -23,7 +23,7 @@ from .train import DEMO_TEST_LOAD, MODEL_PATHS
 
 FAULT_TYPES = ["normal", "inner_race", "outer_race", "ball"]
 UNCERTAIN_THRESHOLD = 0.6  # confidence below this = warn the technician (no JSON field yet, see README)
-MOCK = os.environ.get("SENSOR_MOCK") == "1"
+MOCK = os.environ.get("SENSOR_MOCK") == "1" or os.environ.get("MOCK_MODE", "").lower() == "true"
 MODEL_VARIANT = os.environ.get("SENSOR_MODEL", "demo")
 
 
@@ -39,11 +39,11 @@ def predict(recording_id, window_index):
     m = _models()
     feats = extract(window_slice(sig, window_index), rpm)[:, m["cols"]]
     proba = dict(zip(m["fault_type"].classes_, m["fault_type"].predict_proba(feats)[0]))
-    fault_type = max(proba, key=proba.get)
+    fault_type = str(max(proba, key=proba.get))  # plain str, not numpy.str_
     severity = "none" if fault_type == "normal" else str(m["severity"].predict(feats)[0])
     return {
         "recording_id": recording_id,
-        "window_index": window_index,
+        "window_index": int(window_index),
         "fault_type": fault_type,
         "severity": severity,
         "confidence": round(float(proba[fault_type]), 4),
@@ -105,11 +105,19 @@ def list_recordings():
     return out
 
 
-def get_window(recording_id, window_index):
+def get_window(recording_id, window_index, max_points=None):
+    """Window samples for the chart. max_points (GET /signal) keeps every k-th sample so len <= max_points;
+    sample_rate_hz is then the rate of the returned list (12000 / k), so i / sample_rate_hz stays the true time."""
     if MOCK:
-        return mock.get_window(recording_id, window_index)
-    sig, _ = load_recording(recording_id)
-    return {"samples": window_slice(sig, window_index).tolist(), "sample_rate_hz": SAMPLE_RATE_HZ}
+        out = mock.get_window(recording_id, window_index)
+    else:
+        sig, _ = load_recording(recording_id)
+        out = {"samples": window_slice(sig, window_index).tolist(), "sample_rate_hz": SAMPLE_RATE_HZ}
+    if max_points and len(out["samples"]) > max_points:
+        # ponytail: plain decimation, can drop single-sample impact spikes; min/max buckets if the chart needs them
+        k = -(-len(out["samples"]) // max_points)
+        out = {"samples": out["samples"][::k], "sample_rate_hz": out["sample_rate_hz"] / k}
+    return out
 
 
 if __name__ == "__main__":

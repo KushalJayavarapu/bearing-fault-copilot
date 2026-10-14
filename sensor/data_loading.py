@@ -1,11 +1,16 @@
 """CWRU 12k drive-end recordings: table, fallback downloader, loader, windowing.
 
-Data dir is SENSOR_DATA_DIR (default <repo>/data/raw/cwru). Switch it to Atharva's
-folder once his download script + index exist.
+Data dir: data/raw/cwru/ in the repo (gitignored, Atharva's area). Override with the SENSOR_DATA_DIR env var,
+or --data-dir PATH on the command line. Files are <number>.mat.
+
+python -m sensor.data_loading [--download] [--data-dir PATH]
 """
+import http.client
 import os
 import re
+import shutil
 import sys
+import urllib.error
 import urllib.request
 from functools import lru_cache
 from pathlib import Path
@@ -51,6 +56,28 @@ OR_STRETCH = {
 ALL_FILES = RECORDINGS | OR_STRETCH
 
 
+def _fetch(url, dest, tries=20):
+    """Download with resume: the CWRU server cuts each transfer after ~3 s, so keep asking for the rest
+    (HTTP Range) until the file reaches its full size. Writes to .part and renames only when complete."""
+    part = dest.with_suffix(".part")
+    part.unlink(missing_ok=True)
+    total = None
+    for _ in range(tries):
+        have = part.stat().st_size if part.exists() else 0
+        req = urllib.request.Request(url, headers={"Range": f"bytes={have}-"} if have else {})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r, open(part, "ab" if r.status == 206 else "wb") as f:
+                total = total or int(r.headers["Content-Range"].split("/")[1] if r.status == 206 else r.headers["Content-Length"])
+                shutil.copyfileobj(r, f)
+        except (urllib.error.URLError, http.client.IncompleteRead, OSError):
+            pass  # keep what arrived, resume on the next try
+        if total and part.exists() and part.stat().st_size == total:
+            part.replace(dest)
+            return
+    part.unlink(missing_ok=True)
+    raise RuntimeError(f"{dest.name}: incomplete after {tries} tries; rerun to retry")
+
+
 def download_all():
     """Fallback downloader until Atharva's script exists. Skips files already present."""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -58,7 +85,7 @@ def download_all():
         path = DATA_DIR / f"{meta['file']}.mat"
         if not path.exists():
             print("downloading", path.name)
-            urllib.request.urlretrieve(URL.format(meta["file"]), path)
+            _fetch(URL.format(meta["file"]), path)
 
 
 @lru_cache(maxsize=None)
@@ -92,6 +119,8 @@ def windows(signal, window=WINDOW, overlap=OVERLAP):
 
 
 if __name__ == "__main__":
+    if "--data-dir" in sys.argv:
+        DATA_DIR = Path(sys.argv[sys.argv.index("--data-dir") + 1])
     if "--download" in sys.argv:
         download_all()
     print(f"{'id':<12}{'file':>5}{'samples':>9}{'rpm':>7}{'windows':>8}  label")
