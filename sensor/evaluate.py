@@ -32,6 +32,12 @@ warnings.filterwarnings("ignore", "Mean of empty slice")  # all-NaN severity col
 RESULTS = Path(__file__).resolve().parent / "results"
 
 
+def _majority(labels):
+    """Most common label; ties go to the alphabetically first (set order varies per process)."""
+    values, counts = np.unique(labels, return_counts=True)
+    return values[counts.argmax()]
+
+
 def run_fold(X, y_type, y_sev, rec, train, test, variant=FINAL_VARIANT):
     assert not set(rec[train]) & set(rec[test]), "recording leaked across train/test"
     m = fit(X[train], y_type[train], y_sev[train], variant)
@@ -41,9 +47,8 @@ def run_fold(X, y_type, y_sev, rec, train, test, variant=FINAL_VARIANT):
     conf = proba.max(1)
     faulty = y_type[test] != "normal"
     sev_pred = m["severity"].predict(Xt[faulty])
-    majority = max(set(y_type[train]), key=list(y_type[train]).count)
-    sev_train = list(y_sev[train][y_type[train] != "normal"])
-    sev_majority = max(set(sev_train), key=sev_train.count)
+    majority = _majority(y_type[train])
+    sev_majority = _majority(y_sev[train][y_type[train] != "normal"])
     ok = pred == y_type[test]
     return {
         "acc": accuracy_score(y_type[test], pred),
@@ -113,7 +118,7 @@ def confidence_bands(X, y_type, y_sev, rec, load, cuts=(0.6, 0.7, 0.8, 0.9, 0.95
             label = f"[{lo:.2f}, {min(hi, 1):.2f}{']' if hi > 1 else ')'}"
             lines.append(f"| {name} | {label} | {m.sum()} | {m.mean():.1%} | {ok[m].mean():.3f} |" if m.any() else f"| {name} | {label} | 0 | 0.0% | - |")
     md = "\n".join(lines)
-    (RESULTS / "confidence_bands.md").write_text(md + "\n")
+    (RESULTS / "confidence_bands.md").write_text(md + "\n", newline="\n")
     print(md)
 
 
@@ -136,7 +141,7 @@ def or_positions():
         lines.append(f"| {rid} | {meta['file']} | {len(pred)} | {np.mean(pred == 'outer_race'):.3f} | {common} |")
     lines += ["", *(f"- @{p} o'clock, all windows pooled: {np.mean(np.concatenate(v)):.3f}" for p, v in by_pos.items())]
     md = "\n".join(lines)
-    (RESULTS / "or_positions.md").write_text(md + "\n")
+    (RESULTS / "or_positions.md").write_text(md + "\n", newline="\n")
     print(md)
 
 
@@ -179,7 +184,7 @@ def time_to_detect(start_every=5):
                      f"{np.median(ts):.3f} | {max(ts):.3f} | {missed} |")
     RESULTS.mkdir(exist_ok=True)
     md = "\n".join(lines)
-    (RESULTS / "time_to_detect.md").write_text(md + "\n")
+    (RESULTS / "time_to_detect.md").write_text(md + "\n", newline="\n")
     print(md)
 
 
@@ -226,7 +231,7 @@ if __name__ == "__main__":
             f"Selected for the final model (inner CV on loads 0/1/2 only): **{final}**.",
         ])
         RESULTS.mkdir(exist_ok=True)
-        (RESULTS / "variants.md").write_text(md + "\n")
+        (RESULTS / "variants.md").write_text(md + "\n", newline="\n")
         print(md)
         sys.exit()
 
@@ -274,5 +279,5 @@ if __name__ == "__main__":
         "Holdout folds: " + "; ".join(n for n, _ in holdout),
         f"Top fault_type features (mean RF importance over LOLO folds): {top_str}",
     ])
-    (RESULTS / "results.md").write_text(md + "\n")
+    (RESULTS / "results.md").write_text(md + "\n", newline="\n")
     print("wrote", RESULTS / "results.md", "and confusion_lolo.png")

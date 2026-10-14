@@ -24,11 +24,11 @@ Train on 3 loads, test on the 4th, repeat for each load. Severity accuracy is on
 
 | test load | windows | fault acc | fault macro-F1 | severity acc | baseline (fault) | baseline (severity) | % conf < 0.6 |
 |---|---|---|---|---|---|---|---|
-| 0 hp (1797 rpm) | 1295 | 1.000 | 1.000 | 0.926 | 0.183 | 0.334 | 0.6% |
+| 0 hp (1797 rpm) | 1295 | 1.000 | 1.000 | 0.926 | 0.183 | 0.335 | 0.6% |
 | 1 hp (1772 rpm) | 1529 | 0.999 | 0.999 | 0.988 | 0.308 | 0.333 | 0.4% |
-| 2 hp (1750 rpm) | 1529 | 0.997 | 0.996 | 0.994 | 0.309 | 0.333 | 0.4% |
+| 2 hp (1750 rpm) | 1529 | 0.997 | 0.996 | 0.994 | 0.309 | 0.334 | 0.4% |
 | 3 hp (1730 rpm) | 1534 | 0.964 | 0.962 | 1.000 | 0.308 | 0.334 | 5.2% |
-| **mean** | | **0.990** | **0.989** | **0.977** | **0.277** | **0.333** | **1.7%** |
+| **mean** | | **0.990** | **0.989** | **0.977** | **0.277** | **0.334** | **1.7%** |
 
 Confusion matrix: [confusion_lolo.png](confusion_lolo.png).
 Which features mattered (mean RF importance): peak-to-peak 0.123, RMS 0.115, BPFI envelope peak 0.104, peak 0.098, spectral centroid 0.089, BPFO band energy 0.060.

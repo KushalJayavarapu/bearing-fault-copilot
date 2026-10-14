@@ -25,6 +25,7 @@ Tested on Windows 11 with Python 3.13.
 ```bash
 python -m venv .venv
 # activate: Git Bash  source .venv/Scripts/activate | PowerShell  .venv\Scripts\Activate.ps1 | Linux/macOS  source .venv/bin/activate
+# PowerShell says "running scripts is disabled"? Run  Set-ExecutionPolicy -Scope Process Bypass  first (this window only).
 pip install -r sensor/requirements.txt
 
 python -m sensor.data_loading --download   # 56 .mat files (179 MB) -> data/raw/cwru/ (gitignored), then a sanity table of the 40 recordings

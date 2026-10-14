@@ -103,5 +103,5 @@ if __name__ == "__main__":
     show = lo + int(np.argmin(conf[lo:hi + 1]))
     lines += pick_block(f"Uncertain (longest run of {n} consecutive windows below 0.6)", rid, lo, hi, show)
 
-    (RESULTS / "demo_picks.md").write_text("\n".join(lines) + "\n")
+    (RESULTS / "demo_picks.md").write_text("\n".join(lines) + "\n", newline="\n")
     print("\n".join(lines))
