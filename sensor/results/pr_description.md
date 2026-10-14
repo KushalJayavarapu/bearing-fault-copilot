@@ -13,6 +13,7 @@ Follow-up to #4, answering Kushal's question about CWRU terms and runtime data. 
   - `list_recordings()` lists only recordings whose file is present: all 40 after a full build, 10 in a runtime image. The fields are unchanged.
   - A missing recording raises a clear `FileNotFoundError`.
 - **Tests:** `test_sensor` covers the runtime-only case. `sensor/results/messages.md` has a data and licence reply for Kushal.
+- **Handover note:** [`sensor/STATUS.md`](../STATUS.md) is the end-of-day 14 Oct status, linked from the top of `sensor/README.md`. It covers what's done, the measured headline numbers, the caveats, the demo picks, PR history and open items with owners.
 
 ## How to test
 From the repo root (Git Bash; see `sensor/README.md` for PowerShell):

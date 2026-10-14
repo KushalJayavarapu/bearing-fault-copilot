@@ -1,5 +1,7 @@
 # sensor/: CWRU bearing fault classifier
 
+**Status and handover (14 Oct): [STATUS.md](STATUS.md)**: what's done, headline numbers, open items and owners.
+
 Owner: Harshit. Takes one 2048-sample window (0.17 s) of 12 kHz drive-end vibration and returns the sensor result
 from `docs/contract.md` section 1 (fault_type, severity, confidence, probabilities, context).
 Runs on CPU; the AMD GPU part of the product is the LLM, not this model.
