@@ -1,6 +1,6 @@
 ### Time to a confident correct call (demo model, held-out 3 hp recordings)
 
-Stream consecutive windows of each held-out demo recording (demo model, never trained on load 3) from many start points. Detected = majority vote of window predictions is the true fault_type AND the mean probability of that class over the windows so far >= UNCERTAIN_THRESHOLD. Time = seconds of signal consumed.
+Stream consecutive windows of each held-out demo recording (demo model, never trained on load 3) from many start points. Detected = majority vote of window predictions is the true fault_type AND the mean probability of that class over the windows so far >= HIGH_UNCERTAINTY_BELOW. Time = seconds of signal consumed.
 
 Start points: every 5th window. Windows: 2048 samples (0.171 s), 50% overlap (+0.085 s per extra window).
 

@@ -101,7 +101,7 @@ Per-recording stats and the demo picks with window ranges: [demo_picks.md](demo_
 
 ## 7. Confidence bands (for uncertainty.level)
 
-Out-of-fold predictions only.
+Bands chosen on held-out data; thresholds and `uncertainty_level()` live in `sensor/config.py`. Out-of-fold predictions only.
 
 | level (proposed) | confidence | LOLO windows | LOLO acc | unseen-bearing windows | unseen-bearing acc |
 |---|---|---|---|---|---|

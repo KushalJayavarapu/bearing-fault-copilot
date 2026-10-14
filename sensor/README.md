@@ -54,12 +54,14 @@ python -m sensor.demo_picks                # demo recordings and windows -> demo
 
 ```python
 from sensor.predict import predict, list_recordings, get_window, evidence, is_uncertain
+from sensor.config import uncertainty_level
 predict("OR007@6_3", 58)                    # POST /analyze -> sensor result, exact contract section 1 shape
 list_recordings()                           # GET /recordings -> 40 x {recording_id, load_hp, rpm, fault_type, severity, n_windows, held_out}
 get_window("OR007@6_3", 58)                 # GET /signal -> {"samples": [2048 floats], "sample_rate_hz": 12000}
 get_window("OR007@6_3", 58, max_points=512) # downsampled for the chart: every 4th sample, sample_rate_hz 3000.0
 evidence("OR007@6_3", 58)                   # physics facts behind the window (not in the contract yet)
-is_uncertain(result)                        # confidence < UNCERTAIN_THRESHOLD (0.6, defined once in predict.py)
+is_uncertain(result)                        # True when uncertainty level is "high"
+uncertainty_level(result["confidence"])     # "low" | "medium" | "high", for the final answer's uncertainty.level
 ```
 
 - **Demo from `held_out=True` recordings** (the 10 recordings at 3 hp, 1730 rpm). The default model (`SENSOR_MODEL=demo`) never trained on them,
@@ -73,6 +75,9 @@ is_uncertain(result)                        # confidence < UNCERTAIN_THRESHOLD (
   99th percentile on healthy windows the model trained on, e.g.
   `{"feature": "envelope_peak", "freq_hz": 105.5, "expected_hz": 103.1, "matches": "BPFO", "harmonic": 1, "vs_normal": 6.14, "strength": "high"}`.
   It returns `[]` for healthy windows.
+- **Uncertainty bands** (all thresholds live in `sensor/config.py`): high below 0.60, medium 0.60 to 0.95, low at or above 0.95.
+  The bands were chosen on held-out data: 0.60 comes from the task brief, and only 0.95 was picked by looking at held-out folds,
+  so the band accuracies in results/confidence_bands.md are slightly optimistic.
 - **Timing** (laptop CPU, 300 warm calls): `predict` median 84 ms, p95 132 ms; `evidence` median 2.1 ms.
 
 ## Scope and method

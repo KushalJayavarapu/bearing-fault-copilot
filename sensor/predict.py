@@ -19,10 +19,10 @@ from scipy.stats import kurtosis
 from . import mock
 from .data_loading import LOADS, RECORDINGS, SAMPLE_RATE_HZ, load_recording, n_windows, window_slice, windows
 from .features import ENV_FAULTS, FAULT_MULT as FAULT_HZ, HARMONICS, envelope_peaks, extract
+from .config import HIGH_UNCERTAINTY_BELOW
 from .train import DEMO_TEST_LOAD, MODEL_PATHS
 
 FAULT_TYPES = ["normal", "inner_race", "outer_race", "ball"]
-UNCERTAIN_THRESHOLD = 0.6  # confidence below this = warn the technician (no JSON field yet, see README)
 MOCK = os.environ.get("SENSOR_MOCK") == "1" or os.environ.get("MOCK_MODE", "").lower() == "true"
 MODEL_VARIANT = os.environ.get("SENSOR_MODEL", "demo")
 
@@ -88,7 +88,8 @@ def evidence(recording_id, window_index):
 
 
 def is_uncertain(result):
-    return result["confidence"] < UNCERTAIN_THRESHOLD
+    """True when uncertainty_level(confidence) is "high" (confidence below HIGH_UNCERTAINTY_BELOW)."""
+    return result["confidence"] < HIGH_UNCERTAINTY_BELOW
 
 
 def list_recordings():

@@ -25,7 +25,8 @@ from sklearn.model_selection import StratifiedGroupKFold
 
 from .data_loading import RECORDINGS
 from .features import VARIANTS
-from .predict import FAULT_TYPES, UNCERTAIN_THRESHOLD
+from .config import HIGH_UNCERTAINTY_BELOW, LOW_UNCERTAINTY_AT_OR_ABOVE
+from .predict import FAULT_TYPES
 from .train import FINAL_VARIANT, SEED, build_dataset, fit
 
 warnings.filterwarnings("ignore", "Mean of empty slice")  # all-NaN severity column in size-out table
@@ -56,9 +57,9 @@ def run_fold(X, y_type, y_sev, rec, train, test, variant=FINAL_VARIANT):
         "sev_acc": accuracy_score(y_sev[test][faulty], sev_pred),
         "base_acc": np.mean(y_type[test] == majority),
         "sev_base_acc": np.mean(y_sev[test][faulty] == sev_majority),
-        "uncertain": np.mean(conf < UNCERTAIN_THRESHOLD),
-        "acc_confident": ok[conf >= UNCERTAIN_THRESHOLD].mean(),
-        "acc_uncertain": ok[conf < UNCERTAIN_THRESHOLD].mean() if (conf < UNCERTAIN_THRESHOLD).any() else float("nan"),
+        "uncertain": np.mean(conf < HIGH_UNCERTAINTY_BELOW),
+        "acc_confident": ok[conf >= HIGH_UNCERTAINTY_BELOW].mean(),
+        "acc_uncertain": ok[conf < HIGH_UNCERTAINTY_BELOW].mean() if (conf < HIGH_UNCERTAINTY_BELOW).any() else float("nan"),
         "n_test": len(test),
         "conf": conf,
         "pred": pred,
@@ -68,7 +69,7 @@ def run_fold(X, y_type, y_sev, rec, train, test, variant=FINAL_VARIANT):
 
 
 COLS = ["acc", "f1", "sev_acc", "base_acc", "sev_base_acc", "uncertain", "acc_confident", "acc_uncertain"]
-HEAD = "| fold | n_test | fault acc | fault macro-F1 | severity acc | majority baseline (fault) | majority baseline (severity) | % uncertain (<0.6) | acc when confident | acc when uncertain |"
+HEAD = f"| fold | n_test | fault acc | fault macro-F1 | severity acc | majority baseline (fault) | majority baseline (severity) | % uncertain (<{HIGH_UNCERTAINTY_BELOW:g}) | acc when confident | acc when uncertain |"
 
 
 def lolo_splits(load, idx):
@@ -101,7 +102,7 @@ def table(title, rows):
     return "\n".join(lines)
 
 
-def confidence_bands(X, y_type, y_sev, rec, load, cuts=(0.6, 0.7, 0.8, 0.9, 0.95)):
+def confidence_bands(X, y_type, y_sev, rec, load, cuts=(HIGH_UNCERTAINTY_BELOW, 0.7, 0.8, 0.9, LOW_UNCERTAINTY_AT_OR_ABOVE)):
     """Accuracy per confidence band, from out-of-fold predictions only (no window scored by a model that trained on it).
     Used to map sensor confidence to the final answer's uncertainty.level."""
     idx = np.arange(len(X))
@@ -148,7 +149,7 @@ def or_positions():
 def time_to_detect(start_every=5):
     """Stream consecutive windows of each held-out demo recording (demo model, never trained on load 3) from many
     start points. Detected = majority vote of window predictions is the true fault_type AND the mean probability of
-    that class over the windows so far >= UNCERTAIN_THRESHOLD. Time = seconds of signal consumed."""
+    that class over the windows so far >= HIGH_UNCERTAINTY_BELOW. Time = seconds of signal consumed."""
     import joblib
     from .data_loading import SAMPLE_RATE_HZ, WINDOW, OVERLAP, load_recording, windows
     from .features import extract
@@ -168,7 +169,7 @@ def time_to_detect(start_every=5):
             t = None
             for k in range(1, len(proba) - s0 + 1):
                 v = np.bincount(votes[s0:s0 + k], minlength=len(classes))
-                if v.argmax() == true and v[true] > k / 2 and proba[s0:s0 + k, true].mean() >= UNCERTAIN_THRESHOLD:
+                if v.argmax() == true and v[true] > k / 2 and proba[s0:s0 + k, true].mean() >= HIGH_UNCERTAINTY_BELOW:
                     t = (k - 1) * step_s + win_s
                     break
             times.setdefault(meta["fault_type"], []).append((rid, t))
