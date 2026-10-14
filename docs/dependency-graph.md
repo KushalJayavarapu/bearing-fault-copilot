@@ -6,6 +6,8 @@ Who is waiting on whom. Read this when you are blocked, or before you start, to 
 - Dashed arrow: B can start without A, using a stand-in (a mock file, any PDF, or a direct download).
 - Thick-bordered boxes are the critical path. If one of these slips, the submission slips.
 
+**Deadline:** submissions close on **17 Oct, 10:30 PM**. We plan as if that is India time (confirm the zone on Discord). Features freeze at the end of **16 Oct**, and we aim to submit by **6 PM on 17 Oct**, leaving a buffer.
+
 ## The graph
 
 If the graph does not render, use the table below. GitHub shows it automatically.
@@ -44,10 +46,10 @@ flowchart LR
 
   subgraph KARTHIIK["Karthiik"]
     T1["T1 Repo set up<br/>14 Oct"]
-    T2["T2 Docker + fresh-clone test<br/>17 Oct"]
-    T3["T3 Hosting + live URL<br/>17 Oct"]
-    T4["T4 Video, slides, cover<br/>17-18 Oct"]
-    T5["T5 Submit<br/>18 Oct"]
+    T2["T2 Docker + fresh-clone test<br/>16 Oct night"]
+    T3["T3 Hosting + live URL<br/>16-17 Oct"]
+    T4["T4 Video, slides, cover<br/>17 Oct"]
+    T5["T5 Submit<br/>17 Oct by 6 PM"]
   end
 
   R0 --> K1
@@ -106,10 +108,10 @@ flowchart LR
 | K3 | Integration with real calls | Kushal | H1, S1, K1, K2 | U2, T2, T3, T4 | 16 Oct |
 | U1 | Screen on mock data | Karan | A2 (sample JSON) | U2 | 14 Oct |
 | U2 | Screen connected to the real API | Karan | U1, K3 | T4 | 16 Oct |
-| T2 | Docker build and fresh-clone test | Karthiik | K3 | T5 | 17 Oct |
-| T3 | Hosting and live URL | Karthiik, with Kushal | K3, hosting decision on 15 Oct | T5 | 17 Oct |
-| T4 | Demo video, slides, cover image | Karthiik | U2, H2, S2, K1 | T5 | 17 to 18 Oct |
-| T5 | Submit | Karthiik | T2, T3, T4 | Nothing | 18 Oct, early |
+| T2 | Docker build and fresh-clone test | Karthiik | K3 | T5 | 16 Oct night |
+| T3 | Hosting and live URL | Karthiik, with Kushal | K3, hosting decision on 15 Oct | T5 | 16 to 17 Oct |
+| T4 | Demo video, slides, cover image | Karthiik | U2, H2, S2, K1 | T5 | 17 Oct |
+| T5 | Submit | Karthiik | T2, T3, T4 | Nothing | 17 Oct by 6 PM |
 
 "Soft" means a stand-in exists, so the person is not truly blocked.
 
