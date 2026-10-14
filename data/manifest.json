@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "skf-damage-failure-analysis",
+    "source_title": "SKF: Bearing damage and failure analysis",
+    "url": "https://www.skf.com/group/products/rolling-bearings/damage-and-failure-analysis",
+    "license_note": "Copyrighted manufacturer document. Link only; do not redistribute.",
+    "date_retrieved": "2026-10-14",
+    "description": "Comprehensive reference on bearing damage modes, causes, ISO 15243 classifications, lubrication failures, and corrective actions."
+  },
+  {
+    "slug": "schaeffler-bearing-damage",
+    "source_title": "Schaeffler (FAG): Rolling Bearing Damage - Causes and Remedies",
+    "url": "https://www.schaeffler.com/en/bearing-damage",
+    "license_note": "Copyrighted manufacturer document. Link only; do not redistribute.",
+    "date_retrieved": "2026-10-14",
+    "description": "Failure analysis and damage catalog covering raceway fatigue, fluting, cage damage, wear, and mounting defects."
+  },
+  {
+    "slug": "electric-motor-bearing-guide",
+    "source_title": "Industrial Motor Bearing Maintenance and Lubrication Handbook",
+    "url": "https://www.energy.gov/eere/amo/articles/electric-motor-bearing-maintenance",
+    "license_note": "Public technical guidance. Open for technical reference.",
+    "date_retrieved": "2026-10-14",
+    "description": "Best practices for motor drive-end and non-drive-end bearing inspection, lubrication cycles, alignment, and vibration monitoring."
+  }
+]
