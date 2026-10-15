@@ -129,11 +129,20 @@ def download_all():
     return download(ALL_FILES)
 
 
+def available(recording_id):
+    """True if this recording's .mat is in DATA_DIR (a runtime image may hold only the demo recordings)."""
+    return (DATA_DIR / f"{ALL_FILES[recording_id]['file']}.mat").exists()
+
+
 @lru_cache(maxsize=None)
 def load_recording(recording_id):
     """Return (signal float64 1-D, rpm float). No per-file normalisation, on purpose."""
     meta = ALL_FILES[recording_id]
-    mat = loadmat(DATA_DIR / f"{meta['file']}.mat")
+    path = DATA_DIR / f"{meta['file']}.mat"
+    if not path.exists():
+        raise FileNotFoundError(f"{recording_id} ({path.name}) is not in {DATA_DIR}: this deployment does not include it "
+                                f"(list_recordings() shows what is available; python -m sensor.build fetches all 40)")
+    mat = loadmat(path)
     # Some files hold several *_DE_time vars (e.g. 99.mat also has X098); take the one matching the file number.
     mine = [k for k in mat if (m := re.match(r"X(\d+)", k)) and int(m.group(1)) == meta["file"]]
     key = next(k for k in mine if k.endswith("DE_time"))  # StopIteration = wrong file, fail loudly

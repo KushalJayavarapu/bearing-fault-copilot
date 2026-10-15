@@ -16,7 +16,7 @@ import joblib
 import numpy as np
 
 from . import mock
-from .data_loading import LOADS, RECORDINGS, SAMPLE_RATE_HZ, load_recording, n_windows, window_slice
+from .data_loading import LOADS, RECORDINGS, SAMPLE_RATE_HZ, available, load_recording, n_windows, window_slice
 from .features import ENV_FAULTS, FAULT_MULT as FAULT_HZ, HARMONICS, envelope_peaks, extract
 from .config import EVIDENCE_MIN_VS_NORMAL, HIGH_UNCERTAINTY_BELOW, evidence_strength
 from .train import DEMO_TEST_LOAD, MODEL_PATHS
@@ -85,8 +85,12 @@ def is_uncertain(result):
 
 
 def list_recordings():
+    """Recordings whose data is present (all 40 after python -m sensor.build; only the 10 held-out ones in a
+    runtime image built with --runtime-only). Mock mode lists all 40."""
     out = []
     for rid, meta in RECORDINGS.items():
+        if not MOCK and not available(rid):
+            continue
         if MOCK:
             rpm, nw = LOADS[meta["load_hp"]], 117
         else:

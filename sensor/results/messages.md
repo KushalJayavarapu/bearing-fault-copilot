@@ -11,13 +11,21 @@ For the Dockerfile: RUN python -m sensor.build at image build time, so the live 
 evidence is documented in docs/contract.md section 1, below the unchanged sample, so your test_api still passes (10 passed): optional, a missing field means [], and it can disagree with fault_type (5 of 1534 held-out windows), so please show the disagreement rather than hide it. Thresholds and uncertainty_level(confidence) are in sensor/config.py, so the TODO in app/api/uncertainty.py can import them from there; I haven't touched app/. predict() with evidence: median 88 ms (p95 108 ms) for meta.latency_ms.classifier.
 ```
 
-## Team chat summary
+## Reply to Kushal: data and licence
 
 ```text
-Sensor update (Harshit): follow-up PR (sensor/harshit-evidence) adds the optional evidence field, the uncertainty bands and a one-command build.
-Build: python -m sensor.build downloads and SHA-256-checks the 40 recordings, then trains (about 5 minutes the first time, mostly the slow CWRU server; 0.2 s when everything is already there).
-Uncertainty: uncertainty_level(confidence) gives high below 0.60 (from the brief), medium, and low at or above 0.95 (chosen on held-out data, so the band accuracies are slightly optimistic).
-Evidence: physics peaks behind each call. When present, it's right 94-100% of the time. It's empty for healthy windows and almost always empty for ball faults.
-Demo: heroes IR021_3 (windows 0-68) and OR007@6_3 (0-117). Uncertain pick OR014@6_3 windows 111-115, where the model wrongly says ball at 0.51 confidence and evidence is empty. Picks are in sensor/results/demo_picks.md.
-Headline unchanged: 99.0% fault-type accuracy at a motor load the model never saw; 40-100% on bearings it never saw.
+Data and licence: the CWRU Bearing Data Center pages have no dataset license or terms of use (checked 14 Oct 2026), only a site-wide copyright footer and generic university website terms. So we use the data with attribution but don't redistribute it: the repo has only the download script and the SHA-256 manifest, and any Docker image that contains the data must not go to a public registry.
+At runtime, the demo model needs only the model file (1.41 MB) and the 10 held-out 3 hp recordings (34.2 MB); the healthy baseline is inside the model file. python -m sensor.build --runtime-only DIR copies just those 10, hash-checked, so the final image stage can copy the model plus DIR. list_recordings() then lists only those 10, and any other recording raises a clear FileNotFoundError.
+The source, terms and citation (Smith and Randall 2015, MSSP 64-65:100-131, doi:10.1016/j.ymssp.2015.04.021, checked against the DOI) are now in sensor/README.md.
+```
+
+## Team chat summary (end of day 14 Oct)
+
+```text
+Sensor end of day (Harshit): #2 and #4 merged; #8 open for Kushal (data terms + citation, runtime-only data subset). Full handover: sensor/STATUS.md.
+Numbers: 99.0% fault-type accuracy at a motor load the model never saw (macro-F1 0.989, severity 97.7%, majority baseline 27.7%); 40-100% on bearings it never saw. Demo model on the held-out 3 hp: 96.4%. predict() median 88 ms.
+Demo: heroes IR021_3 (windows 0-68), OR007@6_3 (0-117), OR021@6_3 (56-71). Uncertain pick: OR014@6_3 windows 111-115 (wrong call, confidence below 0.6, evidence empty).
+@Karthiik: the Docker image contains CWRU data (no license found), so build it on the host or use a private registry, never a public one. Use python -m sensor.build --runtime-only for the final stage (10 files, 34.2 MB).
+@Santos @Karan: evidence is optional and can disagree with fault_type; show that, don't hide it. uncertainty.level comes from sensor.config.
+Tomorrow: I'm helping Santos with the retrieval query built from fault_type, severity and evidence.
 ```
