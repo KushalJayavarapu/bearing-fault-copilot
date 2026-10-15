@@ -1,0 +1,2517 @@
+[
+ {
+  "id": "B007_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "B007_3",
+   "window_index": 0,
+   "fault_type": "ball",
+   "severity": "small",
+   "confidence": 0.99,
+   "probabilities": {
+    "normal": 0.0033,
+    "inner_race": 0.0,
+    "outer_race": 0.0067,
+    "ball": 0.99
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1722
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B007_3#23",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "B007_3",
+   "window_index": 23,
+   "fault_type": "ball",
+   "severity": "small",
+   "confidence": 0.99,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0067,
+    "outer_race": 0.0033,
+    "ball": 0.99
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1722
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B007_3#46",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "B007_3",
+   "window_index": 46,
+   "fault_type": "ball",
+   "severity": "small",
+   "confidence": 0.99,
+   "probabilities": {
+    "normal": 0.0033,
+    "inner_race": 0.0,
+    "outer_race": 0.0067,
+    "ball": 0.99
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1722
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B007_3#70",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "B007_3",
+   "window_index": 70,
+   "fault_type": "ball",
+   "severity": "small",
+   "confidence": 0.99,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0067,
+    "outer_race": 0.0033,
+    "ball": 0.99
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1722
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B007_3#93",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "B007_3",
+   "window_index": 93,
+   "fault_type": "ball",
+   "severity": "small",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 1.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1722
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B007_3#116",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "B007_3",
+   "window_index": 116,
+   "fault_type": "ball",
+   "severity": "small",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 1.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1722
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B014_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "B014_3",
+   "window_index": 0,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 0.9933,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0067,
+    "ball": 0.9933
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1724
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B014_3#23",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "B014_3",
+   "window_index": 23,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 1.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1724
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 128.9,
+     "expected_hz": 135.4,
+     "matches": "BSF",
+     "harmonic": 1,
+     "vs_normal": 2.6,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "B014_3#47",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "B014_3",
+   "window_index": 47,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 0.68,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.3,
+    "outer_race": 0.02,
+    "ball": 0.68
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1724
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 128.9,
+     "expected_hz": 135.4,
+     "matches": "BSF",
+     "harmonic": 1,
+     "vs_normal": 3.48,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "B014_3#70",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "B014_3",
+   "window_index": 70,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 0.9833,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0133,
+    "outer_race": 0.0033,
+    "ball": 0.9833
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1724
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B014_3#94",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "B014_3",
+   "window_index": 94,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 1.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1724
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B014_3#117",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "B014_3",
+   "window_index": 117,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 0.95,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0167,
+    "outer_race": 0.0333,
+    "ball": 0.95
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1724
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B021_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "B021_3",
+   "window_index": 0,
+   "fault_type": "ball",
+   "severity": "large",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 1.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1729
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B021_3#23",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "B021_3",
+   "window_index": 23,
+   "fault_type": "ball",
+   "severity": "large",
+   "confidence": 0.98,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.02,
+    "ball": 0.98
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1729
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B021_3#47",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "B021_3",
+   "window_index": 47,
+   "fault_type": "ball",
+   "severity": "large",
+   "confidence": 0.99,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.01,
+    "ball": 0.99
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1729
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B021_3#70",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "B021_3",
+   "window_index": 70,
+   "fault_type": "ball",
+   "severity": "large",
+   "confidence": 0.9667,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0333,
+    "ball": 0.9667
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1729
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B021_3#76",
+  "tags": [
+   "conflict"
+  ],
+  "true_fault": "ball",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "B021_3",
+   "window_index": 76,
+   "fault_type": "ball",
+   "severity": "large",
+   "confidence": 0.9467,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.01,
+    "outer_race": 0.0433,
+    "ball": 0.9467
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1729
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 99.6,
+     "expected_hz": 103.3,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 2.54,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "B021_3#94",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "B021_3",
+   "window_index": 94,
+   "fault_type": "ball",
+   "severity": "large",
+   "confidence": 0.9767,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0233,
+    "ball": 0.9767
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1729
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "B021_3#117",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "ball",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "B021_3",
+   "window_index": 117,
+   "fault_type": "ball",
+   "severity": "large",
+   "confidence": 0.8233,
+   "probabilities": {
+    "normal": 0.0033,
+    "inner_race": 0.0,
+    "outer_race": 0.1733,
+    "ball": 0.8233
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1729
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "IR007_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "IR007_3",
+   "window_index": 0,
+   "fault_type": "inner_race",
+   "severity": "small",
+   "confidence": 0.9633,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.9633,
+    "outer_race": 0.0267,
+    "ball": 0.01
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 152.3,
+     "expected_hz": 155.3,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 4.75,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR007_3#24",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "IR007_3",
+   "window_index": 24,
+   "fault_type": "inner_race",
+   "severity": "small",
+   "confidence": 0.9533,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.9533,
+    "outer_race": 0.03,
+    "ball": 0.0167
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 152.3,
+     "expected_hz": 155.3,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 5.06,
+     "strength": "high"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR007_3#47",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "IR007_3",
+   "window_index": 47,
+   "fault_type": "inner_race",
+   "severity": "small",
+   "confidence": 0.9733,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.9733,
+    "outer_race": 0.02,
+    "ball": 0.0067
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 152.3,
+     "expected_hz": 155.3,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 5.03,
+     "strength": "high"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR007_3#71",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "IR007_3",
+   "window_index": 71,
+   "fault_type": "inner_race",
+   "severity": "small",
+   "confidence": 0.9433,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.9433,
+    "outer_race": 0.0267,
+    "ball": 0.03
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 152.3,
+     "expected_hz": 155.3,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 4.7,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR007_3#94",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "IR007_3",
+   "window_index": 94,
+   "fault_type": "inner_race",
+   "severity": "small",
+   "confidence": 0.94,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.94,
+    "outer_race": 0.0433,
+    "ball": 0.0167
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 152.3,
+     "expected_hz": 155.3,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 4.59,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR007_3#118",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "IR007_3",
+   "window_index": 118,
+   "fault_type": "inner_race",
+   "severity": "small",
+   "confidence": 0.93,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.93,
+    "outer_race": 0.0633,
+    "ball": 0.0067
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 152.3,
+     "expected_hz": 155.3,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 4.99,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR014_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "IR014_3",
+   "window_index": 0,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 0.5067,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.48,
+    "outer_race": 0.0133,
+    "ball": 0.5067
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "IR014_3#23",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "IR014_3",
+   "window_index": 23,
+   "fault_type": "inner_race",
+   "severity": "medium",
+   "confidence": 0.5833,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.5833,
+    "outer_race": 0.0033,
+    "ball": 0.4133
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "IR014_3#46",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "IR014_3",
+   "window_index": 46,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 0.66,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.3133,
+    "outer_race": 0.0267,
+    "ball": 0.66
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "IR014_3#70",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "IR014_3",
+   "window_index": 70,
+   "fault_type": "inner_race",
+   "severity": "medium",
+   "confidence": 0.7833,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.7833,
+    "outer_race": 0.06,
+    "ball": 0.1567
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "IR014_3#93",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "IR014_3",
+   "window_index": 93,
+   "fault_type": "inner_race",
+   "severity": "medium",
+   "confidence": 0.6633,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.6633,
+    "outer_race": 0.01,
+    "ball": 0.3267
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "IR014_3#116",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "IR014_3",
+   "window_index": 116,
+   "fault_type": "inner_race",
+   "severity": "medium",
+   "confidence": 0.96,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.96,
+    "outer_race": 0.0067,
+    "ball": 0.0333
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "IR021_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "IR021_3",
+   "window_index": 0,
+   "fault_type": "inner_race",
+   "severity": "large",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 1.0,
+    "outer_race": 0.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 158.2,
+     "expected_hz": 156.0,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 3.77,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR021_3#23",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "IR021_3",
+   "window_index": 23,
+   "fault_type": "inner_race",
+   "severity": "large",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 1.0,
+    "outer_race": 0.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 158.2,
+     "expected_hz": 156.0,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 3.35,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR021_3#34",
+  "tags": [
+   "hero"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "IR021_3",
+   "window_index": 34,
+   "fault_type": "inner_race",
+   "severity": "large",
+   "confidence": 0.9933,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.9933,
+    "outer_race": 0.0067,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 158.2,
+     "expected_hz": 156.0,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 3.43,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR021_3#47",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "IR021_3",
+   "window_index": 47,
+   "fault_type": "inner_race",
+   "severity": "large",
+   "confidence": 0.9933,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.9933,
+    "outer_race": 0.0067,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 158.2,
+     "expected_hz": 156.0,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 3.95,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR021_3#70",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "IR021_3",
+   "window_index": 70,
+   "fault_type": "inner_race",
+   "severity": "large",
+   "confidence": 0.9833,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.9833,
+    "outer_race": 0.01,
+    "ball": 0.0067
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 158.2,
+     "expected_hz": 156.0,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 3.58,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR021_3#94",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "IR021_3",
+   "window_index": 94,
+   "fault_type": "inner_race",
+   "severity": "large",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.9967,
+    "outer_race": 0.0,
+    "ball": 0.0033
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 158.2,
+     "expected_hz": 156.0,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 3.34,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "IR021_3#117",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "inner_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "IR021_3",
+   "window_index": 117,
+   "fault_type": "inner_race",
+   "severity": "large",
+   "confidence": 0.9867,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.9867,
+    "outer_race": 0.0133,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1728
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 158.2,
+     "expected_hz": 156.0,
+     "matches": "BPFI",
+     "harmonic": 1,
+     "vs_normal": 3.8,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "Normal_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "normal",
+  "true_severity": "none",
+  "sensor": {
+   "recording_id": "Normal_3",
+   "window_index": 0,
+   "fault_type": "normal",
+   "severity": "none",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 1.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "Normal_3#94",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "normal",
+  "true_severity": "none",
+  "sensor": {
+   "recording_id": "Normal_3",
+   "window_index": 94,
+   "fault_type": "normal",
+   "severity": "none",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 1.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "Normal_3#189",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "normal",
+  "true_severity": "none",
+  "sensor": {
+   "recording_id": "Normal_3",
+   "window_index": 189,
+   "fault_type": "normal",
+   "severity": "none",
+   "confidence": 0.99,
+   "probabilities": {
+    "normal": 0.99,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 0.01
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "Normal_3#283",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "normal",
+  "true_severity": "none",
+  "sensor": {
+   "recording_id": "Normal_3",
+   "window_index": 283,
+   "fault_type": "normal",
+   "severity": "none",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 1.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "Normal_3#378",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "normal",
+  "true_severity": "none",
+  "sensor": {
+   "recording_id": "Normal_3",
+   "window_index": 378,
+   "fault_type": "normal",
+   "severity": "none",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 1.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "Normal_3#472",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "normal",
+  "true_severity": "none",
+  "sensor": {
+   "recording_id": "Normal_3",
+   "window_index": 472,
+   "fault_type": "normal",
+   "severity": "none",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 1.0,
+    "inner_race": 0.0,
+    "outer_race": 0.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR007@6_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "OR007@6_3",
+   "window_index": 0,
+   "fault_type": "outer_race",
+   "severity": "small",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0033,
+    "outer_race": 0.9967,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 103.1,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 5.79,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 206.1,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 4.8,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 310.5,
+     "expected_hz": 309.2,
+     "matches": "BPFO",
+     "harmonic": 3,
+     "vs_normal": 3.0,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR007@6_3#23",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "OR007@6_3",
+   "window_index": 23,
+   "fault_type": "outer_race",
+   "severity": "small",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0033,
+    "outer_race": 0.9967,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 103.1,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 5.76,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 206.1,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 5.01,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 310.5,
+     "expected_hz": 309.2,
+     "matches": "BPFO",
+     "harmonic": 3,
+     "vs_normal": 3.03,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR007@6_3#47",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "OR007@6_3",
+   "window_index": 47,
+   "fault_type": "outer_race",
+   "severity": "small",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0033,
+    "outer_race": 0.9967,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 103.1,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 6.47,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 206.1,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 5.8,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 310.5,
+     "expected_hz": 309.2,
+     "matches": "BPFO",
+     "harmonic": 3,
+     "vs_normal": 3.4,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR007@6_3#58",
+  "tags": [
+   "hero"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "OR007@6_3",
+   "window_index": 58,
+   "fault_type": "outer_race",
+   "severity": "small",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0033,
+    "outer_race": 0.9967,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 103.1,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 6.14,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 206.1,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 5.25,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 310.5,
+     "expected_hz": 309.2,
+     "matches": "BPFO",
+     "harmonic": 3,
+     "vs_normal": 3.17,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR007@6_3#70",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "OR007@6_3",
+   "window_index": 70,
+   "fault_type": "outer_race",
+   "severity": "small",
+   "confidence": 0.9633,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0267,
+    "outer_race": 0.9633,
+    "ball": 0.01
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 103.1,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 5.7,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 206.1,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 5.05,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 310.5,
+     "expected_hz": 309.2,
+     "matches": "BPFO",
+     "harmonic": 3,
+     "vs_normal": 3.01,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR007@6_3#94",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "OR007@6_3",
+   "window_index": 94,
+   "fault_type": "outer_race",
+   "severity": "small",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0033,
+    "outer_race": 0.9967,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 103.1,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 5.4,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 206.1,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 4.43,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 310.5,
+     "expected_hz": 309.2,
+     "matches": "BPFO",
+     "harmonic": 3,
+     "vs_normal": 2.76,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR007@6_3#117",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "small",
+  "sensor": {
+   "recording_id": "OR007@6_3",
+   "window_index": 117,
+   "fault_type": "outer_race",
+   "severity": "small",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0033,
+    "outer_race": 0.9967,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1725
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 103.1,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 6.03,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 206.1,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 5.35,
+     "strength": "high"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 310.5,
+     "expected_hz": 309.2,
+     "matches": "BPFO",
+     "harmonic": 3,
+     "vs_normal": 3.08,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR014@6_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 0,
+   "fault_type": "outer_race",
+   "severity": "medium",
+   "confidence": 0.6733,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.6733,
+    "ball": 0.3267
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#23",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 23,
+   "fault_type": "outer_race",
+   "severity": "medium",
+   "confidence": 0.8033,
+   "probabilities": {
+    "normal": 0.0133,
+    "inner_race": 0.0,
+    "outer_race": 0.8033,
+    "ball": 0.1833
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#47",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 47,
+   "fault_type": "outer_race",
+   "severity": "medium",
+   "confidence": 0.83,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 0.83,
+    "ball": 0.17
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#70",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 70,
+   "fault_type": "outer_race",
+   "severity": "medium",
+   "confidence": 0.56,
+   "probabilities": {
+    "normal": 0.02,
+    "inner_race": 0.0,
+    "outer_race": 0.56,
+    "ball": 0.42
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#94",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 94,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 0.5,
+   "probabilities": {
+    "normal": 0.0067,
+    "inner_race": 0.0,
+    "outer_race": 0.4933,
+    "ball": 0.5
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#111",
+  "tags": [
+   "uncertain"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 111,
+   "fault_type": "outer_race",
+   "severity": "medium",
+   "confidence": 0.5867,
+   "probabilities": {
+    "normal": 0.0167,
+    "inner_race": 0.0033,
+    "outer_race": 0.5867,
+    "ball": 0.3933
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#112",
+  "tags": [
+   "uncertain"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 112,
+   "fault_type": "outer_race",
+   "severity": "medium",
+   "confidence": 0.5867,
+   "probabilities": {
+    "normal": 0.01,
+    "inner_race": 0.0,
+    "outer_race": 0.5867,
+    "ball": 0.4033
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#113",
+  "tags": [
+   "uncertain"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 113,
+   "fault_type": "outer_race",
+   "severity": "medium",
+   "confidence": 0.5967,
+   "probabilities": {
+    "normal": 0.02,
+    "inner_race": 0.0,
+    "outer_race": 0.5967,
+    "ball": 0.3833
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#114",
+  "tags": [
+   "uncertain"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 114,
+   "fault_type": "ball",
+   "severity": "medium",
+   "confidence": 0.5067,
+   "probabilities": {
+    "normal": 0.01,
+    "inner_race": 0.0,
+    "outer_race": 0.4833,
+    "ball": 0.5067
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#115",
+  "tags": [
+   "uncertain"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 115,
+   "fault_type": "outer_race",
+   "severity": "medium",
+   "confidence": 0.5733,
+   "probabilities": {
+    "normal": 0.0033,
+    "inner_race": 0.0,
+    "outer_race": 0.5733,
+    "ball": 0.4233
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR014@6_3#117",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "medium",
+  "sensor": {
+   "recording_id": "OR014@6_3",
+   "window_index": 117,
+   "fault_type": "outer_race",
+   "severity": "medium",
+   "confidence": 0.82,
+   "probabilities": {
+    "normal": 0.01,
+    "inner_race": 0.0,
+    "outer_race": 0.82,
+    "ball": 0.17
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1723
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR021@6_3#0",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 0,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 0.9867,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.01,
+    "outer_race": 0.9867,
+    "ball": 0.0033
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR021@6_3#23",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 23,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 1.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 102.8,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 3.41,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 205.6,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 2.78,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR021@6_3#47",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 47,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 0.9067,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.04,
+    "outer_race": 0.9067,
+    "ball": 0.0533
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR021@6_3#63",
+  "tags": [
+   "hero"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 63,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 1.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 102.8,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 3.21,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 205.6,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 2.59,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR021@6_3#70",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 70,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0033,
+    "outer_race": 0.9967,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 205.6,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 2.69,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 102.8,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 2.55,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR021@6_3#77",
+  "tags": [
+   "conflict"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 77,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 0.9433,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0533,
+    "outer_race": 0.9433,
+    "ball": 0.0033
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 128.9,
+     "expected_hz": 135.2,
+     "matches": "BSF",
+     "harmonic": 1,
+     "vs_normal": 2.62,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 102.8,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 2.57,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR021@6_3#94",
+  "tags": [
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 94,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 0.97,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0133,
+    "outer_race": 0.97,
+    "ball": 0.0167
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": []
+  }
+ },
+ {
+  "id": "OR021@6_3#104",
+  "tags": [
+   "conflict"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 104,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 1.0,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0,
+    "outer_race": 1.0,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 128.9,
+     "expected_hz": 135.2,
+     "matches": "BSF",
+     "harmonic": 1,
+     "vs_normal": 2.89,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 102.8,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 2.72,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 205.1,
+     "expected_hz": 205.6,
+     "matches": "BPFO",
+     "harmonic": 2,
+     "vs_normal": 2.65,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR021@6_3#106",
+  "tags": [
+   "conflict"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 106,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0033,
+    "outer_race": 0.9967,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 128.9,
+     "expected_hz": 135.2,
+     "matches": "BSF",
+     "harmonic": 1,
+     "vs_normal": 2.58,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 102.8,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 2.55,
+     "strength": "medium"
+    }
+   ]
+  }
+ },
+ {
+  "id": "OR021@6_3#117",
+  "tags": [
+   "conflict",
+   "sweep"
+  ],
+  "true_fault": "outer_race",
+  "true_severity": "large",
+  "sensor": {
+   "recording_id": "OR021@6_3",
+   "window_index": 117,
+   "fault_type": "outer_race",
+   "severity": "large",
+   "confidence": 0.9967,
+   "probabilities": {
+    "normal": 0.0,
+    "inner_race": 0.0033,
+    "outer_race": 0.9967,
+    "ball": 0.0
+   },
+   "context": {
+    "sensor": "drive_end",
+    "sample_rate_hz": 12000,
+    "load_hp": 3,
+    "rpm": 1721
+   },
+   "evidence": [
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 128.9,
+     "expected_hz": 135.2,
+     "matches": "BSF",
+     "harmonic": 1,
+     "vs_normal": 2.62,
+     "strength": "medium"
+    },
+    {
+     "feature": "envelope_peak",
+     "freq_hz": 105.5,
+     "expected_hz": 102.8,
+     "matches": "BPFO",
+     "harmonic": 1,
+     "vs_normal": 2.54,
+     "strength": "medium"
+    }
+   ]
+  }
+ }
+]
