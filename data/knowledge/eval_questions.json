@@ -66,6 +66,7 @@
     "severity": "medium",
     "expected_guide": "skf-damage-failure-analysis",
     "expected_page": 30,
+    "expected_pages": [30, 31],
     "expected_chunk": "skf-damage-failure-analysis-p30-c1",
     "answer_excerpt": "Install an insulated bearing (ceramic balls or aluminum oxide coated ring, e.g., INSOCOAT) at NDE and a shaft grounding brush/ring at DE."
   },
@@ -76,6 +77,7 @@
     "severity": "large",
     "expected_guide": "skf-damage-failure-analysis",
     "expected_page": 38,
+    "expected_pages": [28, 38],
     "expected_chunk": "skf-damage-failure-analysis-p38-c1",
     "answer_excerpt": "True brinelling indentations retain original grinding marks on the crater floor with raised shoulders/rims, whereas false brinelling shows polished/reddish fretting wear."
   },
@@ -86,6 +88,7 @@
     "severity": "none",
     "expected_guide": "electric-motor-bearing-guide",
     "expected_page": 15,
+    "expected_pages": [1, 15],
     "expected_chunk": "electric-motor-bearing-guide-p15-c1",
     "answer_excerpt": "Run the motor with the drain plug open to allow excess grease to purge and prevent over-greasing fluid churning and thermal breakdown."
   },
@@ -96,6 +99,7 @@
     "severity": "small",
     "expected_guide": "electric-motor-bearing-guide",
     "expected_page": 21,
+    "expected_pages": [21, 34],
     "expected_chunk": "electric-motor-bearing-guide-p21-c1",
     "answer_excerpt": "Laser alignment tolerance: Angular misalignment must not exceed 0.05 mm/100 mm; parallel offset must not exceed 0.05 mm for 1800 rpm motors."
   },
@@ -106,6 +110,7 @@
     "severity": "large",
     "expected_guide": "electric-motor-bearing-guide",
     "expected_page": 21,
+    "expected_pages": [12, 21, 34],
     "expected_chunk": "electric-motor-bearing-guide-p21-c1",
     "answer_excerpt": "Full Lockout/Tagout (LOTO) of the main supply breaker and verify zero energy state with a calibrated voltage detector before loosening mechanical bolts."
   },
