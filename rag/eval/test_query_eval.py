@@ -2,6 +2,7 @@
 from rag.models import Passage
 
 from .query_eval import derive_tags, score
+from .uncertain_eval import merge, request_for
 from .variants import A, B, B2, C, D, evidence_terms
 
 
@@ -38,6 +39,10 @@ def run():
     assert D(s)["query"].startswith(C(s)["query"] + "; ") and len(D(s)["query"]) > len(C(s)["query"])
     h = {"fault_type": "normal", "severity": "none", "evidence": []}
     assert A(h) == B(h) == C(h) == D(h)  # healthy: no severity word, no evidence, no damage modes
+    ids = lambda *xs: [{"chunk_id": x} for x in xs]
+    assert [p["chunk_id"] for p in merge([ids("a", "b", "c"), ids("b", "d")])] == ["a", "b", "d", "c"]
+    assert len(merge([ids("a", "b", "c"), ids("d", "e", "f")])) == 5 and merge([ids("a"), []]) == ids("a")
+    assert request_for({"fault_type": "ball", "severity": "small"}, "normal")["severity"] == "none"
     print("ok")
 
 

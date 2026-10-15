@@ -89,3 +89,22 @@ Hero (3), uncertain (5) and conflict (5) picks have their own tables, and the to
 ## If a variant is wanted anyway
 
 The switch would be one line in `app/api/orchestrator.py` line 81: `retrieve(build_query(sensor))` -> `retrieve(build_query_v2(sensor))`. There is no `build_query_v2` because nothing qualified; `rag/eval/variants.py` has C and D as functions if you want to try them.
+
+## Variant E: top two classes when confidence is low (proposal only)
+
+`python -m rag.eval.uncertain_eval` (needs the index; fixtures in `fixtures/high_uncertainty.json`, regenerate with `--make-fixtures`, 2 min). Run only on the 80 held-out windows with confidence below `sensor.config.HIGH_UNCERTAINTY_BELOW` (0.60). E: retrieve with A for the top two classes of `probabilities`, interleave, drop repeated chunk ids, keep 5. Scored against the **true** fault. Output: `results/uncertain_eval.md`.
+
+| group (windows) | variant | true-fault passage in top 5 | true-fault passages (of 5) | predicted-class passages (of 5) | guide / playbook / log |
+|---|---|---|---|---|---|
+| top-1 class wrong (36) | A | 0/36 | 0.00 | 5.00 | 1.0 / 3.0 / 1.0 |
+| | E | 36/36 | 1.61 | 2.97 | 0.0 / 5.0 / 0.0 |
+| top-1 class right (44) | A | 44/44 | 4.18 | 4.18 | 0.0 / 4.4 / 0.6 |
+| | E | 44/44 | 2.59 | 2.59 | 0.0 / 4.4 / 0.6 |
+| all (80) | A | 44/80 | 2.30 | 4.55 | 0.5 / 3.8 / 0.8 |
+| | E | 80/80 | 2.15 | 2.76 | 0.0 / 4.7 / 0.3 |
+
+- **It does what it is for.** In all 36 misclassified windows the true fault was the classifier's second class, and A retrieves none of its passages. E brings in 1.6 of them on average, including OR014@6_3 window 114 (ball at 0.507, true outer race): E adds `bridge-table-outer_race-p19-c6` and `-p32-c8` next to three ball rows.
+- **What it pushes out.** About half the predicted-class passages (5.0 -> 3.0 when the classifier was wrong; 4.2 -> 2.6 true-fault passages when it was right, with the other class filling the gap). All guide pages and logs disappear from the 36 misclassified windows: E's answer there is bridge-table rows only.
+- **Net on the 80 windows:** true-fault passages per answer 2.30 -> 2.15, i.e. no gain; E trades presence of the true fault for dilution. Whether that is wanted depends on the human-confirm moment and on how the prompt copes with two candidate faults, which this measurement cannot see.
+- **Thin evidence.** 78 of the 80 windows are two recordings (IR014_3 and OR014@6_3, both confused with ball) and there are only 5 distinct class pairs. It says nothing about other bearings, and I did not test whether the second class's probability could tell the cases apart.
+- **Not a recommendation to switch.** Nothing in `app/` is changed. Rerun after the corpus is replaced before deciding.
