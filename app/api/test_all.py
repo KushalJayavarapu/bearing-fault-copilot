@@ -1,11 +1,11 @@
 """Run every self-check:  python -m app.api.test_all   (from the repo root)"""
 import sys
 
-from . import test_api, test_llm, test_orchestrator
+from . import test_api, test_llm, test_orchestrator, test_real_mode
 
 if __name__ == "__main__":
     total = 0
-    for mod in (test_api, test_llm, test_orchestrator):
+    for mod in (test_api, test_llm, test_orchestrator, test_real_mode):
         tests = [(n, f) for n, f in sorted(vars(mod).items()) if n.startswith("test_") and callable(f) and f.__module__ == mod.__name__]
         for name, fn in tests:
             fn()

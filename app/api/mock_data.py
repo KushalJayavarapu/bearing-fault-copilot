@@ -188,7 +188,11 @@ CONTENT = {
 HEDGE = "The classifier is not sure about this window, so treat what follows as a possibility, not a finding. "
 def analyze(rid, idx):
     """The final answer (contract section 3) without request_id."""
-    sensor = sensor_result(rid, idx)
+    return answer_for(sensor_result(rid, idx))
+
+
+def answer_for(sensor):
+    """Canned final answer for any sensor result (mock or real), without request_id."""
     conf, sev = sensor["confidence"], sensor["severity"]
     content = CONTENT[sensor["fault_type"]]
     level = uncertainty.level(conf)
