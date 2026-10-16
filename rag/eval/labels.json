@@ -1,0 +1,7 @@
+{
+  "_doc": "Inputs to the labels used by python -m rag.eval.query_eval. The per-passage tags the harness derives from them are written to results/labels_audit.md for a human to check. Fault tags: bridge-table rows (playbook) use their 'Bearing Fault Type' line, synthetic logs use their 'Fault Type' field, a guide page gets the fault of every bridge row that cites that guide and page (the bridge table already maps guide pages to faults), anything else is untagged ('general'). A 'routine' tag marks guide pages whose first routine_zone_words words contain a routine_terms entry. Untagged and 'routine' passages never count as wrong-fault. overrides replaces the derived tags of one chunk_id (stale ids are reported, never fatal).",
+  "routine_zone_words": 20,
+  "routine_terms": ["condition monitoring", "greasing", "routine", "lubrication interval"],
+  "safety_regex": "safety[- ]critical action: yes|safety critical:|lock\\s?-?out|loto\\b|tag\\s?-?out|de-?energi[sz]|zero[- ]energy",
+  "overrides": {}
+}
