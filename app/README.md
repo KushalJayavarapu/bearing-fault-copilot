@@ -24,12 +24,13 @@ Settings (all optional, same names as `.env.example`):
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `MOCK_MODE` | `true` | `false` makes the data endpoints answer 501 until the real pipeline is connected |
+| `MOCK_MODE` | `true` | `true` = canned sensor data and stub retrieval. `false` = the real classifier (`sensor/`) and retrieval (`rag/`), see "Real sensor and retrieval" below |
 | `API_HOST` | `127.0.0.1` | use `0.0.0.0` inside Docker |
 | `API_PORT` | `8080` | |
 | `LLM_MOCK` | same as `MOCK_MODE` | `false` (with `MOCK_MODE=true`) gets the explanation from the real LLM, see below |
 | `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` | none | the OpenAI-compatible LLM server; put them in `.env` (never commit it) |
 | `LLM_SERVED_ON` | `unknown` | what to show as `meta.served_on`; set it to what really serves the model |
+| `LOG_LEVEL` | `INFO` | the server log shows LLM errors, rejected answers and retrieval failures here |
 | `LLM_MAX_CONCURRENT` | `2` | simultaneous LLM calls from this app (the team shares one key) |
 | `CORS_ORIGINS` | `*` | comma-separated list; set it when the UI is hosted on its own domain |
 
@@ -39,7 +40,7 @@ PowerShell example: `$env:API_PORT = "9000"; python -m app`
 
 | Endpoint | Notes |
 | --- | --- |
-| `GET /health` | status per part, plus `mode` (`mock` or `real`) |
+| `GET /health` | status per part, plus `mode` (`mock`, `mixed` or `real`). A real part that failed to load shows `error: <reason>` and `status` becomes `degraded` |
 | `GET /recordings` | 40 demo recordings. `held_out: true` marks the 10 at 3 hp (the real model never trained on them) |
 | `GET /signal?recording_id=...&window_index=...&max_points=512` | window 0 to 116. `sample_rate_hz` is the rate of the returned list, so `i / sample_rate_hz` is the true time |
 | `POST /analyze` | body `{"recording_id": "OR007@6_3", "window_index": 2}`, returns the final answer (contract section 3) |
@@ -101,3 +102,35 @@ Network note: if the smoke test says `CERTIFICATE_VERIFY_FAILED ... self-signed 
 (some university and hostel networks do). Use a phone hotspot. Do not turn certificate checking off: it protects the key.
 
 Still to come: connecting the real retrieval and the real sensor (`MOCK_MODE=false`), which today answers 501.
+
+## Real sensor and retrieval (`MOCK_MODE=false`)
+
+Everything real, in order (the first sensor build downloads 140 MB and takes about 5 minutes; use the hotspot only for the LLM, any network is fine for these):
+
+```
+pip install -r sensor/requirements.txt -r app/api/requirements.txt
+pip install rank_bm25 fastembed numpy          # retrieval; rag/ has no requirements file yet, ask Santos for pinned versions
+python -m sensor.build                         # CWRU recordings + classifier models
+python -m data.fetch_guides                    # writes the local guide texts
+python -m rag.build                            # retrieval index (the first run also downloads the embedding model)
+```
+
+Then in `.env` set `MOCK_MODE=false` (`LLM_MOCK` follows it, so the LLM is live and needs the key; set `LLM_MOCK=true` to
+see the real classifier with canned text) and run `python -m app`. The log should say `warm-up done ... sensor=ok retrieval=ok`;
+`GET /health` shows the same. If a part failed, the log and `/health` say why, and `/analyze` still answers (retrieval down =
+degraded answer from the sensor alone; classifier down = HTTP 500 with the reason).
+
+`GET /recordings` then lists only the recordings whose data file is present (all 40 after `python -m sensor.build`, the 10
+held-out ones in a runtime image).
+
+## Choosing the model
+
+```
+python -m app.api.llm_compare              # current model + up to 3 others, 2 runs on 2 cases, about 16 calls
+python -m app.api.llm_compare --models DeepSeek-V4-Flash,<other id> --runs 3 --rag
+```
+
+It scores each call like a real request (valid JSON, no stray text, no false "no evidence" claim, no invented citation
+ids) and prints latency. The team shares 20 requests per minute: warn them first. Why it exists: see the 15 Oct notes in
+`app/api/prompt.py` (`check_text`). Two runs per case is a small sample, so confirm the winner with a few real `/analyze` calls.
+

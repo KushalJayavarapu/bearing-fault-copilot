@@ -7,10 +7,14 @@ Rules enforced here, not left to the model:
 - LLM down or unusable output = a degraded answer (sensor result + manual inspection), never a crash
 - evidence that disagrees with the classifier is shown, and uncertainty can then not be "low"
 """
+import logging
 import time
 
 from . import prompt, uncertainty
 from .llm import LLMError
+
+log = logging.getLogger("app.orchestrator")
+MAX_TOKENS = 700  # the answer is a few short sentences; a lower cap keeps a slow gateway from stretching the wait
 
 FAMILY = {"BPFI": "inner_race", "BPFO": "outer_race", "BSF": "ball"}
 MANUAL = {"step": "Arrange a manual inspection of the bearing before relying on this result.",
@@ -54,14 +58,19 @@ def _ask(llm, sensor, level, conflict, passages):
     allowed, total_ms, model = {p["chunk_id"] for p in passages}, 0, getattr(llm, "model", "unknown")
     for attempt in range(2):
         try:
-            reply = llm.chat(messages)
-        except LLMError:
+            reply = llm.chat(messages, max_tokens=MAX_TOKENS)
+        except LLMError as e:
+            log.warning("LLM call failed, showing the degraded answer: %s", e)
             return None, "unavailable", total_ms, "llm_error"
-        total_ms, model = total_ms + reply.latency_ms, reply.model
+        total_ms += reply.latency_ms
+        if reply.model != model:  # the gateway names models its own way (it once said "self-dploy/..."): show ours
+            log.info("gateway reports model %r for configured model %r", reply.model, model)
         try:
             parts, _dropped = prompt.parse_output(reply.text, allowed)
+            prompt.check_text(parts, sensor)
             return parts, model, total_ms, None
         except prompt.BadOutput as e:
+            log.warning("LLM answer rejected (attempt %d of 2): %s", attempt + 1, e)
             messages = messages + [{"role": "assistant", "content": reply.text},
                                    {"role": "user", "content": f"That answer was not usable ({e}). "
                                                                "Answer again with only the JSON object."}]
@@ -79,7 +88,8 @@ def analyze(sensor, *, retrieve, llm, request_id, classifier_ms=0, served_on="un
     t = time.perf_counter()
     try:
         passages = [p for p in retrieve(build_query(sensor)).get("passages", []) if p.get("chunk_id")]
-    except Exception:  # retrieval down: answer from the sensor alone
+    except Exception as e:  # retrieval down: answer from the sensor alone
+        log.warning("retrieval failed, answering from the sensor alone: %s: %s", type(e).__name__, e)
         passages = []
     retrieval_ms = _ms(t)
 
@@ -104,8 +114,11 @@ def analyze(sensor, *, retrieve, llm, request_id, classifier_ms=0, served_on="un
     citations = []
     for i in cited:
         p = by_id[i]
-        text = p.get("text", "")
-        citations.append({"id": i, "source_title": p.get("source_title", ""), "page": p.get("page"),
+        text = p.get("excerpt") or p.get("text", "")  # retrieval's focused sentence if it gives one
+        title = p.get("source_title", "")
+        if p.get("synthetic"):  # made-up example data (e.g. the sample maintenance logs) must never look like a real source
+            title = f"[Synthetic example] {title}"
+        citations.append({"id": i, "source_title": title, "page": p.get("page"),
                           "url": p.get("url") or "", "excerpt": text[:237] + "..." if len(text) > 240 else text})
     return {
         "request_id": request_id,
