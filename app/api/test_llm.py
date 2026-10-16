@@ -72,11 +72,33 @@ def test_backoff_grows_and_gives_up():
     assert 0.75 <= sleeps[0] <= 1.25 and 1.5 <= sleeps[1] <= 2.5 and 3.0 <= sleeps[2] <= 5.0
 
 
-def test_retry_after_is_capped():
+def test_long_retry_after_fails_fast_then_cools_down():
     calls = []
-    c, sleeps = _client(lambda req: (calls.append(1), httpx.Response(429, headers={"Retry-After": "600"}) if len(calls) == 1 else _ok())[1])
-    c.chat([{"role": "user", "content": "x"}])
-    assert sleeps == [20.0]
+
+    def handler(req):
+        calls.append(1)
+        return httpx.Response(429, headers={"Retry-After": "60"}) if len(calls) <= 2 else _ok()
+    c, sleeps = _client(handler)
+    for expected_calls in (1, 1):  # the second call must not even reach the server
+        try:
+            c.chat([{"role": "user", "content": "x"}])
+            raise AssertionError("should have failed")
+        except LLMError as e:
+            assert e.status == 429 and "wait" in str(e)
+        assert len(calls) == expected_calls and sleeps == []
+    c._blocked_until = 0.0  # the cooldown is over
+    try:
+        c.chat([{"role": "user", "content": "x"}])
+        raise AssertionError("second 429 expected")
+    except LLMError as e:
+        assert e.status == 429 and len(calls) == 2
+    c._blocked_until = 0.0
+    assert c.chat([{"role": "user", "content": "x"}]).text == "hi"
+
+
+def test_usage_endpoint():
+    c, _ = _client(lambda req: httpx.Response(200, json={"remaining": 5}) if req.url.path == "/v1/usage" else httpx.Response(404))
+    assert c.usage() == {"remaining": 5}
 
 
 def test_auth_error_is_not_retried_and_hides_key():
@@ -104,6 +126,17 @@ def test_network_errors_are_retried():
         return _ok()
     c, sleeps = _client(handler)
     assert c.chat([{"role": "user", "content": "x"}]).attempts == 3 and len(sleeps) == 2
+
+
+def test_network_error_message_shows_the_reason():
+    def handler(req):
+        raise httpx.ConnectError("getaddrinfo failed")
+    c, _ = _client(handler, max_retries=0)
+    try:
+        c.chat([{"role": "user", "content": "x"}])
+        raise AssertionError("should have failed")
+    except LLMError as e:
+        assert "ConnectError" in str(e) and "getaddrinfo failed" in str(e) and e.status is None
 
 
 def test_json_mode_fallback_is_remembered():
@@ -160,6 +193,18 @@ def test_from_env():
             raise AssertionError("placeholder key must be rejected")
         except LLMError as e:
             assert "LLM_API_KEY" in str(e) and "LLM_MODEL" not in str(e)
+    with _env(**{**names, "LLM_BASE_URL": "<the API base URL from the page>", "LLM_API_KEY": "<your key>", "LLM_MODEL": "<model>"}):
+        try:
+            LLMClient.from_env()
+            raise AssertionError("template placeholders must be rejected")
+        except LLMError as e:
+            assert all(n in str(e) for n in ("LLM_BASE_URL", "LLM_API_KEY", "LLM_MODEL"))
+    with _env(**{**names, "LLM_BASE_URL": "api.example.com/v1", "LLM_API_KEY": KEY, "LLM_MODEL": "m"}):
+        try:
+            LLMClient.from_env()
+            raise AssertionError("a URL without http(s) must be rejected")
+        except LLMError as e:
+            assert "http://" in str(e)
     with _env(**{**names, "LLM_BASE_URL": "http://x/v1/", "LLM_API_KEY": KEY, "LLM_MODEL": "m"}):
         c = LLMClient.from_env()
         assert (c.base_url, c.model) == ("http://x/v1", "m") and KEY not in repr(c)

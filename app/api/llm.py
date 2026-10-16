@@ -3,6 +3,8 @@
 Plain httpx, no SDK. The whole team shares ONE key, so 429 (rate limit) is expected under load:
 - 429 and 5xx are retried with exponential backoff and jitter, honoring Retry-After
 - at most LLM_MAX_CONCURRENT calls run at once from this app (default 2)
+- a long Retry-After (the AMD per-minute limit says 60 s) is not waited out: the call fails at once and further calls fail fast
+  until the time is up, so a stuck request never hangs and the team's quota is not burned
 - the API key is only ever sent in the Authorization header: never logged, printed, or put in an error message
 """
 import os
@@ -43,6 +45,7 @@ class LLMClient:
         self._http = httpx.Client(timeout=timeout, transport=transport)
         self._slots = threading.BoundedSemaphore(max(1, max_concurrent))
         self.json_mode = True  # turned off for good if the server rejects response_format
+        self._blocked_until = 0.0  # monotonic time before which we do not call (server said to wait)
 
     def __repr__(self):
         return f"LLMClient(base_url={self.base_url!r}, model={self.model!r})"
@@ -50,9 +53,12 @@ class LLMClient:
     @classmethod
     def from_env(cls, **kwargs):
         values = {n: os.environ.get(n, "").strip() for n in ("LLM_BASE_URL", "LLM_API_KEY", "LLM_MODEL")}
-        missing = [n for n, v in values.items() if not v or v == "replace-me"]
+        # empty, the .env.example placeholder, or a template left as <like this> are all "not filled in"
+        missing = [n for n, v in values.items() if not v or v == "replace-me" or (v.startswith("<") and v.endswith(">"))]
         if missing:
-            raise LLMError("LLM not configured: set " + ", ".join(missing) + " (copy .env.example to .env).")
+            raise LLMError("LLM not configured: put real values for " + ", ".join(missing) + " in .env (copy .env.example to .env).")
+        if not values["LLM_BASE_URL"].startswith(("http://", "https://")):
+            raise LLMError("LLM_BASE_URL must start with http:// or https://")
         return cls(values["LLM_BASE_URL"], values["LLM_API_KEY"], values["LLM_MODEL"],
                    max_concurrent=int(os.environ.get("LLM_MAX_CONCURRENT", "2")), **kwargs)
 
@@ -73,11 +79,20 @@ class LLMClient:
         r.raise_for_status()
         return [m.get("id") for m in r.json().get("data", [])]
 
+    def usage(self):
+        """Best effort: the team's quota, used amount and rate limit (GET /usage on the AMD Token Factory)."""
+        r = self._http.get(f"{self.base_url}/usage", headers=self._headers())
+        r.raise_for_status()
+        return r.json()
+
     def chat(self, messages, *, temperature=0.2, max_tokens=900, json_mode=True) -> LLMReply:
         payload = {"model": self.model, "messages": messages, "temperature": temperature, "max_tokens": max_tokens}
         use_json = json_mode and self.json_mode
         if use_json:
             payload["response_format"] = {"type": "json_object"}
+        cooling = self._blocked_until - time.monotonic()
+        if cooling > 0:
+            raise LLMError(f"rate limited: wait about {round(cooling)} s before the next call", 429)
         start, calls, retries = time.perf_counter(), 0, 0
         with self._slots:
             while True:
@@ -85,7 +100,7 @@ class LLMClient:
                 try:
                     r = self._http.post(f"{self.base_url}/chat/completions", json=payload, headers=self._headers())
                 except httpx.TransportError as e:  # timeout, connection refused, DNS ...
-                    err, retry_after = LLMError(f"network error: {type(e).__name__}"), None
+                    err, retry_after = LLMError(f"network error: {type(e).__name__}: {self._clean(str(e))}"), None
                 else:
                     if r.status_code == 200:
                         return self._reply(r, start, calls)
@@ -100,6 +115,9 @@ class LLMClient:
                         retry_after = float(r.headers["Retry-After"])
                     except (KeyError, ValueError):
                         retry_after = None
+                if retry_after is not None and retry_after > MAX_WAIT_S:
+                    self._blocked_until = time.monotonic() + retry_after
+                    raise LLMError(f"rate limited: the server asks to wait {round(retry_after)} s", r.status_code)
                 if retries >= self.max_retries:
                     raise err
                 retries += 1
