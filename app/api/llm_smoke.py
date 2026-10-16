@@ -9,7 +9,7 @@ import sys
 from .envfile import load_env
 from .llm import LLMClient, LLMError
 
-HINTS = {401: "The key was rejected: check LLM_API_KEY.", 403: "The key was rejected: check LLM_API_KEY.",
+HINTS = {None: "Could not reach the server. See the reason above: a DNS, firewall, VPN or certificate problem on this network.", 401: "The key was rejected: check LLM_API_KEY.", 403: "The key was rejected: check LLM_API_KEY.",
          404: "Not found: check LLM_BASE_URL (with or without /v1) and LLM_MODEL.",
          429: "Rate limited: the whole team shares one key. Wait a minute and retry."}
 
@@ -26,7 +26,11 @@ def main() -> int:
         ids = llm.list_models()
         print(f"Models offered ({len(ids)}): {', '.join(ids[:15])}\n")
     except Exception as e:  # not every server has /models
-        print(f"(model list not available: {type(e).__name__})\n")
+        print(f"(model list not available: {type(e).__name__}: {llm._clean(str(e))[:150]})\n")
+    try:
+        print(f"Usage: {json.dumps(llm.usage())[:400]}\n")
+    except Exception as e:  # best effort
+        print(f"(usage not available: {type(e).__name__}: {llm._clean(str(e))[:150]})\n")
     try:
         r = llm.chat([{"role": "system", "content": "You are a bearing maintenance assistant."},
                       {"role": "user", "content": "In one sentence, what causes outer race bearing faults?"}],

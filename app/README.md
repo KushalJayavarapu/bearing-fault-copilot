@@ -70,13 +70,20 @@ Errors: unknown recording or request id is 404, window out of range or bad body 
 - `needs_human_confirm` is true when any action is `safety_critical` or the uncertainty is high.
 - The latency numbers are fixed placeholders.
 
-## Real LLM explanation (once the key is unlocked)
+## Real LLM explanation
 
-1. Copy `.env.example` to `.env` and fill in `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`. `.env` is gitignored. Never paste the key in the chat.
+1. Copy `.env.example` to `.env`. The AMD Token Factory address and model are already filled in; you only add `LLM_API_KEY`
+   (reveal it on your own Token Factory page). `.env` is gitignored. Never paste the key in the chat.
 2. Test the connection: `python -m app.api.llm_smoke`. It lists the models, sends one prompt, checks JSON mode, and prints a line to post
    in the team chat (it never prints the key).
 3. In `.env` set `LLM_MOCK=false` and restart `python -m app`. `/analyze` now gets its explanation from the real LLM.
    The sensor result and the reference passages are still mock/stub until those parts are connected (`/health` shows `mode: mixed`).
+
+Limits to know (AMD Token Factory, read from the key's `/usage`): the whole team shares one key: 20 requests per minute and 8 at once,
+and a $1 daily budget that resets at 21:30 IST (a call costs a tiny fraction of that, so the per-minute limit is the one that bites). Each `/analyze`
+uses one LLM call (two if the first answer was unusable). A rate-limit reply asks to wait 60 s: the client does not wait it out, the answer
+falls back to the sensor result for that request, and calls fail fast until the time is up. The service is for trial use with no uptime
+promise, and models can be withdrawn: if a call says the model is "not supported", check `GET <base url>/models`. Do not send personal data.
 
 How the LLM is used (`app/api/orchestrator.py`, `app/api/prompt.py`):
 
@@ -89,5 +96,8 @@ How the LLM is used (`app/api/orchestrator.py`, `app/api/prompt.py`):
 - No retrieved passages: the LLM is not asked. LLM down or an unusable answer (after one repair try): the answer shows the sensor result
   and a manual inspection, never an error page. 429 and 5xx are retried with backoff.
 - The reference passages are untrusted text: the prompt tells the model to ignore instructions inside them.
+
+Network note: if the smoke test says `CERTIFICATE_VERIFY_FAILED ... self-signed certificate`, your Wi-Fi is inspecting HTTPS traffic
+(some university and hostel networks do). Use a phone hotspot. Do not turn certificate checking off: it protects the key.
 
 Still to come: connecting the real retrieval and the real sensor (`MOCK_MODE=false`), which today answers 501.
