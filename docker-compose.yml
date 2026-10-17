@@ -1,0 +1,55 @@
+# Bearing Fault Copilot — Docker Compose
+# Quick start:  cp .env.example .env && docker compose up --build
+# Default MOCK_MODE=true: no keys, no data, no GPU needed.
+
+services:
+  # ---- FastAPI orchestrator (uvicorn) ----
+  api:
+    build:
+      context: .
+      target: api
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Defaults that let "docker compose up" work on a fresh clone.
+      # Override in .env — these are fallbacks only.
+      - MOCK_MODE=${MOCK_MODE:-true}
+      - LLM_MOCK=${LLM_MOCK:-true}
+      - API_HOST=0.0.0.0
+      - API_PORT=${API_PORT:-8080}
+      - RETRIEVER_MODE=${RETRIEVER_MODE:-mock}
+    ports:
+      - "${API_PORT:-8080}:${API_PORT:-8080}"
+    healthcheck:
+      test: ["CMD", "python", "/app/scripts/healthcheck.py"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    volumes:
+      - fastembed_cache:/root/.cache/fastembed
+    restart: unless-stopped
+
+  # ---- Streamlit user interface ----
+  ui:
+    build:
+      context: .
+      target: ui
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - API_URL=http://api:${API_PORT:-8080}
+      - MOCK=${MOCK_MODE:-true}
+      - UI_PORT=${UI_PORT:-8501}
+    ports:
+      - "${UI_PORT:-8501}:${UI_PORT:-8501}"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  fastembed_cache:
+    driver: local
