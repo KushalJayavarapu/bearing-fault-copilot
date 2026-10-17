@@ -5,7 +5,7 @@ Bands come from Harshit's held-out measurements (sensor/results/confidence_bands
   medium 0.60 <= confidence < 0.95
   low    confidence >= 0.95
 The bands were chosen on held-out data, so do not call them "calibrated".
-TODO: when the thresholds live in sensor config (Harshit's follow-up PR), import them from there.
+These copies must match sensor/config.py (uncertainty_level); test_api.test_uncertainty_matches_the_sensor_package checks it.
 """
 HIGH_BELOW = 0.60
 LOW_FROM = 0.95

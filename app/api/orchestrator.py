@@ -8,12 +8,18 @@ Rules enforced here, not left to the model:
 - evidence that disagrees with the classifier is shown, and uncertainty can then not be "low"
 """
 import logging
+import os
 import time
 
 from . import prompt, uncertainty
 from .llm import LLMError
 
 log = logging.getLogger("app.orchestrator")
+# Page numbers are shown only if CITE_PAGES=true. Our guide texts are team-written and their page markers are not pages of
+# any real document (the bridge table's "p. 34" is a page in a vendor manual we have not checked), so by default no page
+# is shown, to the model or in a citation. Also, some passages carry a text page ("bridge-table", "L001"), which the
+# contract (page is a number or null) cannot hold.
+CITE_PAGES = os.environ.get("CITE_PAGES", "false").strip().lower() == "true"
 MAX_TOKENS = 700  # the answer is a few short sentences; a lower cap keeps a slow gateway from stretching the wait
 
 FAMILY = {"BPFI": "inner_race", "BPFO": "outer_race", "BSF": "ball"}
@@ -46,6 +52,12 @@ def evidence_conflict(sensor):
         return None
     return (f"The strongest vibration peak matches {family.replace('_', ' ')} ({best['matches']}), "
             f"but the classifier says {sensor['fault_type'].replace('_', ' ')}.")
+
+
+def _scrub(p):
+    page = p.get("page")
+    keep = CITE_PAGES and isinstance(page, int) and not isinstance(page, bool)
+    return {**p, "page": page if keep else None}
 
 
 def _ms(since):
@@ -87,7 +99,7 @@ def analyze(sensor, *, retrieve, llm, request_id, classifier_ms=0, served_on="un
 
     t = time.perf_counter()
     try:
-        passages = [p for p in retrieve(build_query(sensor)).get("passages", []) if p.get("chunk_id")]
+        passages = [_scrub(p) for p in retrieve(build_query(sensor)).get("passages", []) if p.get("chunk_id")]
     except Exception as e:  # retrieval down: answer from the sensor alone
         log.warning("retrieval failed, answering from the sensor alone: %s: %s", type(e).__name__, e)
         passages = []

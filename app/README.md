@@ -17,7 +17,7 @@ python -m venv .venv
 # activate: Git Bash  source .venv/Scripts/activate | PowerShell  .venv\Scripts\Activate.ps1 | Linux/macOS  source .venv/bin/activate
 pip install -r app/api/requirements.txt
 python -m app                      # http://localhost:8080  (opens the interactive docs with "try it" buttons, also at /docs)
-python -m app.api.test_all         # every self-check (41 checks, no key or network needed)
+python -m app.api.test_all         # every self-check (no key or network needed)
 ```
 
 Settings (all optional, same names as `.env.example`):
