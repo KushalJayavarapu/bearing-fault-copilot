@@ -62,6 +62,15 @@ def test_recordings_match_sensor_package():
     assert [(p, ft, sev) for p, ft, sev, _ in consts["CONDITIONS"]] == mock_data.CONDITIONS
 
 
+def test_uncertainty_matches_the_sensor_package():
+    """sensor/config.py is plain Python (no numpy), so import it and compare thresholds and levels."""
+    from sensor import config
+    assert (uncertainty.HIGH_BELOW, uncertainty.LOW_FROM) == (config.HIGH_UNCERTAINTY_BELOW, config.LOW_UNCERTAINTY_AT_OR_ABOVE)
+    for pct in range(0, 101):
+        for c in (pct / 100, pct / 100 - 1e-9, pct / 100 + 1e-9):
+            assert uncertainty.level(c) == config.uncertainty_level(c), c
+
+
 def test_signal():
     r = client.get("/signal", params={"recording_id": "IR014_1", "window_index": 5}).json()
     assert len(r["samples"]) == 512 and r["sample_rate_hz"] == 12000 / 4

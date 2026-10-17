@@ -165,6 +165,25 @@ def test_citation_uses_the_retrieval_excerpt_and_labels_synthetic_sources():
     assert c["stub-outer_race-action"]["excerpt"].startswith("Stub text for development only.")  # no excerpt: text slice
 
 
+def test_page_numbers_are_hidden_unless_cite_pages_is_on():
+    def retrieve(req):
+        ps = retrieval_stub.retrieve(req)["passages"]
+        ps[0] = {**ps[0], "page": 34}  # stub-outer_race-defect: a number
+        ps[1] = {**ps[1], "page": "bridge-table"}  # stub-outer_race-action: a text label, which the contract cannot hold
+        return {"passages": ps}
+    llm = FakeLLM(GOOD)
+    a = _run(_sensor(), llm, retrieve=retrieve)  # _run also validates the answer against the contract schema
+    assert all(c["page"] is None for c in a["citations"])
+    assert ", p." not in llm.calls[0][1]["content"] and "bridge-table" not in llm.calls[0][1]["content"].split("PASSAGES")[0]
+    old = orchestrator.CITE_PAGES
+    try:
+        orchestrator.CITE_PAGES = True
+        c = {x["id"]: x for x in _run(_sensor(), FakeLLM(GOOD), retrieve=retrieve)["citations"]}
+        assert c["stub-outer_race-defect"]["page"] == 34 and c["stub-outer_race-action"]["page"] is None  # text label still dropped
+    finally:
+        orchestrator.CITE_PAGES = old
+
+
 def test_all_actions_unsupported_falls_back_to_manual_inspection():
     bad = json.loads(GOOD)
     for act in bad["recommended_actions"]:

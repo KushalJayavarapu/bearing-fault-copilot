@@ -1,0 +1,19 @@
+{
+  "recordings": [
+    {"recording_id":"OR007@6_0","load_hp":0,"approx_rpm":1797,"true_fault_type":"outer_race","num_windows":100},
+    {"recording_id":"IR007_0","load_hp":0,"approx_rpm":1797,"true_fault_type":"inner_race","num_windows":100},
+    {"recording_id":"B007_0","load_hp":0,"approx_rpm":1797,"true_fault_type":"ball","num_windows":100},
+    {"recording_id":"Normal_0","load_hp":0,"approx_rpm":1797,"true_fault_type":"normal","num_windows":100}
+  ],
+  "analysis": {
+    "request_id":"mock-0001",
+    "sensor":{"recording_id":"OR007@6_0","window_index":12,"fault_type":"outer_race","severity":"small","confidence":0.93,"probabilities":{"normal":0.01,"inner_race":0.02,"outer_race":0.93,"ball":0.04},"context":{"sensor":"drive_end","sample_rate_hz":12000,"load_hp":0,"rpm":1797}},
+    "explanation":"MOCK TEXT. The vibration pattern matches an outer race defect.",
+    "likely_causes":["MOCK cause one","MOCK cause two"],
+    "recommended_actions":[{"step":"MOCK step: inspect the bearing housing","safety_critical":false,"citation_ids":["mock-guide-p1-c1"]},{"step":"MOCK step: replace the bearing","safety_critical":true,"citation_ids":["mock-guide-p2-c3"]}],
+    "needs_human_confirm":true,
+    "citations":[{"id":"mock-guide-p1-c1","source_title":"Mock guide","page":1,"url":"https://example.com","excerpt":"Mock excerpt"},{"id":"mock-guide-p2-c3","source_title":"Mock guide","page":2,"url":"https://example.com","excerpt":"Mock excerpt"}],
+    "uncertainty":{"level":"low","note":"MOCK note"},
+    "meta":{"model":"mock-model","served_on":"AMD (mock)","latency_ms":{"classifier":12,"retrieval":40,"llm":1800,"total":1900}}
+  }
+}
