@@ -25,6 +25,8 @@ MAX_TOKENS = 700  # the answer is a few short sentences; a lower cap keeps a slo
 FAMILY = {"BPFI": "inner_race", "BPFO": "outer_race", "BSF": "ball"}
 MANUAL = {"step": "Arrange a manual inspection of the bearing before relying on this result.",
           "safety_critical": False, "citation_ids": []}
+ROUTINE = {"step": "No action needed now. Continue routine condition monitoring.",
+           "safety_critical": False, "citation_ids": []}
 DEGRADED = {
     "no_passages": "No supporting reference passages were found, so only the sensor result is shown.",
     "llm_error": "The explanation service did not respond, so only the sensor result is shown.",
@@ -119,7 +121,9 @@ def analyze(sensor, *, retrieve, llm, request_id, classifier_ms=0, served_on="un
                 explanation = prompt.HEDGE + explanation
             actions.insert(0, dict(MANUAL))
         elif not actions:
-            actions = [dict(MANUAL)]
+            # A confident "healthy" answer needs no inspection. Everything else with no supported action does.
+            healthy = sensor["fault_type"] == "normal" and level == "low"
+            actions = [dict(ROUTINE if healthy else MANUAL)]
 
     by_id = {p["chunk_id"]: p for p in passages}
     cited = list(dict.fromkeys(i for a in actions for i in a["citation_ids"]))

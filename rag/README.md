@@ -1,7 +1,7 @@
 # rag/ - Bearing Fault Retrieval-Augmented Generation Pipeline
 
 **Owner:** Santos (RAG Pipeline)  
-**Deliverable:** Ingest, chunk, embed, index, and retrieve passages with verified citations over bearing failure guides, bridge tables, and maintenance logs.  
+**Deliverable:** Ingest, chunk, embed, index, and retrieve passages with source metadata over the team's bearing reference notes, the bridge table, and synthetic maintenance logs.  
 **Compliance:** Adheres strictly to `docs/contract.md` (v0.1 section 2).
 
 ---
@@ -90,8 +90,8 @@ All 10 queries synthesized by the orchestrator were evaluated:
 
 **Result: 10 / 10 PASS (0 failures)**. Every query returns 5 passages with valid `source_title`, `page`, `url`, `chunk_id`, and lead `excerpt`.
 
-### Suite B: Atharva's Independent Test Set (`data/knowledge/eval_questions.json`)
-12 independently authored questions testing specific technical details (fatigue initiation depth, 6 o'clock load zone rotation, ball skidding mitigation, VFD fluting insulation, true brinelling vs false brinelling, and motor LOTO safety).
+### Suite B: Atharva's Test Set (`data/knowledge/eval_questions.json`)
+12 questions written by a teammate other than the retriever's author (still our own team, not an external benchmark) testing specific technical details (fatigue initiation depth, 6 o'clock load zone rotation, ball skidding mitigation, VFD fluting insulation, true brinelling vs false brinelling, and motor LOTO safety).
 
 **Result: 12 / 12 (100.0% Top-5 Hit Rate)**.
 

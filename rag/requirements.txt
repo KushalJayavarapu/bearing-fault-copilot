@@ -1,0 +1,5 @@
+# Retrieval dependencies (hybrid BM25 + embeddings). Not pinned yet: pin from `pip freeze` of a working environment.
+numpy
+pydantic
+rank_bm25
+fastembed

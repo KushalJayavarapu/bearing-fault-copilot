@@ -46,8 +46,7 @@ streamlit run app/ui/app.py          # set MOCK=false in app/ui/.env to talk to 
 ### 2. Real mode (real classifier, real retrieval, real LLM)
 
 ```bash
-pip install -r sensor/requirements.txt -r app/api/requirements.txt -r app/ui/requirements.txt
-pip install rank_bm25 fastembed pydantic
+pip install -r sensor/requirements.txt -r rag/requirements.txt -r app/api/requirements.txt -r app/ui/requirements.txt
 python -m sensor.build               # downloads CWRU (~140 MB), checks SHA-256, trains the models
 python -m data.fetch_guides          # writes the local knowledge texts
 python -m rag.build                  # builds the index (first run downloads the embedding model)

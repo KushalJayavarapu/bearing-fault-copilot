@@ -192,6 +192,16 @@ def test_all_actions_unsupported_falls_back_to_manual_inspection():
     assert a["recommended_actions"] == [orchestrator.MANUAL] and a["citations"] == []
 
 
+def test_confident_healthy_result_does_not_ask_for_an_inspection():
+    healthy = _sensor("Normal_3", 1, fault_type="normal", severity="none", confidence=0.99, evidence=[])
+    done = json.dumps({"explanation": "No fault is present.", "likely_causes": [], "recommended_actions": []})
+    a = _run(healthy, FakeLLM(done))
+    assert a["uncertainty"]["level"] == "low" and a["recommended_actions"] == [orchestrator.ROUTINE]
+    assert a["needs_human_confirm"] is False
+    unsure = _run({**healthy, "confidence": 0.8}, FakeLLM(done))  # medium: a manual check should still confirm it
+    assert unsure["uncertainty"]["level"] == "medium" and unsure["recommended_actions"] == [orchestrator.MANUAL]
+
+
 def test_high_uncertainty_adds_hedge_and_manual_inspection_first():
     s = _sensor("OR007@6_3", 0)
     assert s["confidence"] < 0.6
