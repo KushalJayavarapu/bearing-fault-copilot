@@ -43,8 +43,6 @@ python -m data.fetch_guides || {
 echo ""
 echo "=== Step 3/3: Build RAG search index ========================"
 echo "    Command: python -m rag.build"
-# TODO(Santos): Create rag/requirements.txt and uncomment the install
-#   line in the Dockerfile so fastembed + rank-bm25 are available.
 python -m rag.build
 
 echo ""

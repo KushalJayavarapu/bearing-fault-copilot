@@ -12,16 +12,13 @@ WORKDIR /app
 COPY app/api/requirements.txt /tmp/req-api.txt
 COPY sensor/requirements.txt  /tmp/req-sensor.txt
 COPY app/ui/requirements.txt  /tmp/req-ui.txt
+COPY rag/requirements.txt     /tmp/req-rag.txt
 RUN pip install --no-cache-dir \
         -r /tmp/req-api.txt \
         -r /tmp/req-sensor.txt \
         -r /tmp/req-ui.txt \
+        -r /tmp/req-rag.txt \
     && rm /tmp/req-*.txt
-
-# TODO(Santos): Create rag/requirements.txt listing fastembed, rank-bm25,
-#   numpy, pydantic.  Then uncomment the two lines below:
-# COPY rag/requirements.txt /tmp/req-rag.txt
-# RUN pip install --no-cache-dir -r /tmp/req-rag.txt && rm /tmp/req-rag.txt
 
 # Pre-download the fastembed embedding model so the first request is fast.
 # Harmless no-op when fastembed is not installed.

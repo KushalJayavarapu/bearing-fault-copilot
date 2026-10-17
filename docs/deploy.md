@@ -163,12 +163,13 @@ streamlit run scripts/ui_placeholder.py
 
 ---
 
-## TODOs for teammates
+## Component Integration Status
 
-| Who | What | Why |
-|-----|------|-----|
-| **Santos** | Create `rag/requirements.txt` listing `fastembed`, `rank-bm25`, `numpy`, `pydantic` | These packages are imported in `rag/indexer.py` and `rag/models.py` but not declared in any requirements file |
-| **Santos** | Uncomment the two `rag/requirements.txt` lines in the Dockerfile after creating the file | Enables real retrieval in Docker |
-| **Karan** | Push the Streamlit UI to `app/ui/` and update the `ui` CMD in the Dockerfile | The current `scripts/ui_placeholder.py` is a minimal stand-in |
-| **Atharva** | Verify `python -m data.fetch_guides` works headlessly (no browser/tty) | Called by `scripts/prepare_data.sh` inside Docker |
-| **Kushal** | Wire `RETRIEVER_MODE` into the orchestrator so `real` mode calls Santos's retriever instead of the stub | Currently `app/api/main.py` always uses `retrieval_stub.py`; the `RETRIEVER_MODE` guard in the entrypoint only checks for the index file |
+| Who | Component | Status |
+|-----|-----------|--------|
+| **Santos** | `rag/requirements.txt` (`fastembed`, `rank-bm25`, `numpy`, `pydantic`) | **Completed** & integrated into Dockerfile |
+| **Karan** | Streamlit UI in `app/ui/` (`app.py`, `requirements.txt`) | **Completed** & set as UI target CMD |
+| **Harshit** | ML Vibration Classifier in `sensor/` | **Completed** (99.0% load-generalization, evidence bands) |
+| **Atharva** | CWRU Data, Guide texts & bridge table in `data/` | **Completed** |
+| **Kushal** | Orchestrator & API in `app/api/` | **Completed** (integrated real sensor + RAG retrieval) |
+| **Kartik** | Multi-stage Docker, compose & packaging | **Completed** |
