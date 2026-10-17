@@ -17,7 +17,7 @@ python -m venv .venv
 # activate: Git Bash  source .venv/Scripts/activate | PowerShell  .venv\Scripts\Activate.ps1 | Linux/macOS  source .venv/bin/activate
 pip install -r app/api/requirements.txt
 python -m app                      # http://localhost:8080  (opens the interactive docs with "try it" buttons, also at /docs)
-python -m app.api.test_all         # every self-check (41 checks, no key or network needed)
+python -m app.api.test_all         # every self-check (no key or network needed)
 ```
 
 Settings (all optional, same names as `.env.example`):
@@ -105,11 +105,11 @@ Still to come: connecting the real retrieval and the real sensor (`MOCK_MODE=fal
 
 ## Real sensor and retrieval (`MOCK_MODE=false`)
 
-Everything real, in order (the first sensor build downloads 140 MB and takes about 5 minutes; use the hotspot only for the LLM, any network is fine for these):
+Everything real, in order (the first sensor build downloads 140 MB and takes about 5 minutes; if your Wi-Fi intercepts HTTPS (some hostel or campus networks do), use a phone hotspot for these downloads and for the LLM):
 
 ```
 pip install -r sensor/requirements.txt -r app/api/requirements.txt
-pip install rank_bm25 fastembed numpy          # retrieval; rag/ has no requirements file yet, ask Santos for pinned versions
+pip install -r rag/requirements.txt             # retrieval
 python -m sensor.build                         # CWRU recordings + classifier models
 python -m data.fetch_guides                    # writes the local guide texts
 python -m rag.build                            # retrieval index (the first run also downloads the embedding model)

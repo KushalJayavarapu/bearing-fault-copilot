@@ -30,10 +30,10 @@ Our repository is public and MIT-compliant. To strictly respect publisher copyri
 
 | Source | Status in Git | Publisher Copyright Terms |
 | :--- | :---: | :--- |
-| **SKF: Bearing damage and failure analysis** | **Script Only (Not committed)** | © SKF Group. All rights reserved. Strict proprietary manufacturer document; redistribution of full text prohibited without written permission. Passages cited by page and linked to official portal. |
-| **Schaeffler (FAG): Rolling Bearing Damage** | **Script Only (Not committed)** | © Schaeffler Technologies AG & Co. KG. All rights reserved. Proprietary manufacturer document; kept strictly local and git-ignored. |
-| **Industrial Motor Bearing Maintenance Handbook** | **Script Only (Not committed)** | Derived from U.S. Department of Energy (EERE) public technical literature. Kept local and git-ignored to maintain uniform handling across all guides. |
-| **Curated Bridge Table & Synthetic Logs** | **Committed (OK)** | Authored by the team and released under the repository's MIT License. |
+| **Team reference notes: bearing damage modes (ISO 15243 classes)** | **Script Only (Not committed)** | Written by the team (MIT). Not a copy of the SKF document or any other publication. The `[[page N]]` markers are section breaks, not page numbers of a real document. |
+| **Team reference notes: bearing damage causes and remedies** | **Script Only (Not committed)** | Written by the team (MIT). Not a copy of any Schaeffler document. |
+| **Team reference notes: electric motor bearing maintenance and lubrication** | **Script Only (Not committed)** | Written by the team (MIT). Not a copy of any U.S. Department of Energy document. |
+| **Curated Bridge Table & Synthetic Logs** | **Committed (OK)** | Authored by the team and released under the repository's MIT License. The bridge table's page references are unverified (see the note in the file). The 36 log entries are synthetic and are marked as such in answers. |
 
 ---
 
@@ -57,4 +57,4 @@ To extract and prepare the local cleaned guide text files in `data/guides/` prio
 ```bash
 python -m data.fetch_guides
 ```
-This writes local text files with `[[page X]]` citation markers into `data/guides/`, which are git-ignored and never committed.
+This writes the team's reference notes, with `[[page X]]` section markers (not real page numbers), into `data/guides/`, which is git-ignored. The app does not show page numbers unless `CITE_PAGES=true`.

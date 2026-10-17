@@ -15,7 +15,9 @@ from dotenv import load_dotenv
 BASE = Path(__file__).resolve().parent
 load_dotenv(BASE / ".env")
 MOCK = os.getenv("MOCK", "true").strip().lower() in {"1", "true", "yes", "on"}
-API_URL = os.getenv("API_URL", "http://localhost:8000").rstrip("/")
+API_URL = os.getenv("API_URL", "http://localhost:8080").rstrip("/")
+# real mode: show only recordings the demo model never trained on (3 hp), unless ALL_RECORDINGS=true
+ALL_RECORDINGS = os.getenv("ALL_RECORDINGS", "false").strip().lower() in {"1", "true", "yes", "on"}
 MOCK_DATA = json.loads((BASE / "mock_data" / "sample.json").read_text(encoding="utf-8"))
 
 FAULTS = {
@@ -85,7 +87,7 @@ def get_json(path: str, params: dict | None = None) -> dict:
     response = requests.get(f"{API_URL}{path}", params=params, timeout=25)
     response.raise_for_status()
     payload = response.json()
-    if not isinstance(payload, dict):
+    if not isinstance(payload, (dict, list)):
         raise ValueError(f"{path} returned an unexpected response")
     return payload
 
@@ -100,11 +102,26 @@ def post_json(path: str, payload: dict) -> dict:
 
 
 def recordings() -> list[dict]:
-    payload = MOCK_DATA if MOCK else get_json("/recordings")
-    rows = payload.get("recordings")
+    if MOCK:
+        rows = MOCK_DATA.get("recordings")
+    else:
+        rows = get_json("/recordings")
+        if isinstance(rows, dict):  # older shape: {"recordings": [...]}
+            rows = rows.get("recordings")
     if not isinstance(rows, list):
         raise ValueError("The recordings response is missing its recordings list")
-    return [row for row in rows if isinstance(row, dict) and row.get("recording_id")]
+    out = []
+    for row in rows:
+        if isinstance(row, dict) and row.get("recording_id"):
+            row = dict(row)
+            # the API calls these rpm / fault_type / n_windows; the mock sample uses older names
+            row.setdefault("approx_rpm", row.get("rpm"))
+            row.setdefault("true_fault_type", row.get("fault_type"))
+            row.setdefault("num_windows", row.get("n_windows"))
+            out.append(row)
+    if not MOCK and not ALL_RECORDINGS:
+        out = [r for r in out if r.get("held_out")] or out  # never present training data as a result
+    return out
 
 
 def true_fault(rec_id: str) -> str:
@@ -114,7 +131,7 @@ def true_fault(rec_id: str) -> str:
 def signal(rec_id: str, index: int = 12) -> dict:
     if not MOCK:
         payload = get_json("/signal", {"recording_id": rec_id, "window_index": index})
-        if not isinstance(payload.get("samples"), list):
+        if not isinstance(payload, dict) or not isinstance(payload.get("samples"), list):
             raise ValueError("The signal response is missing samples")
         return payload
     # Synthetic UI-only waveform. This is not real CWRU data or a model output.
@@ -174,11 +191,18 @@ def render_header() -> None:
         if MOCK:
             st.markdown('<div style="text-align:right"><span class="top-pill">● DEMO MODE</span><div class="status-line" style="margin-top:8px">Mock data · GPU not connected</div></div>', unsafe_allow_html=True)
         else:
-            st.markdown('<div style="text-align:right"><span class="top-pill">● API MODE</span><div class="status-line" style="margin-top:8px">Backend configured</div></div>', unsafe_allow_html=True)
+            try:
+                health = requests.get(f"{API_URL}/health", timeout=5).json()
+                parts = health.get("parts", {})
+                line = " · ".join(f"{k} {v}" for k, v in parts.items() if k != "api")
+                pill = "● LIVE" if health.get("status") == "ok" else "● DEGRADED"
+            except (requests.RequestException, ValueError, AttributeError):
+                pill, line = "● API UNREACHABLE", f"No answer from {API_URL}"
+            st.markdown(f'<div style="text-align:right"><span class="top-pill">{pill}</span><div class="status-line" style="margin-top:8px">{line}</div></div>', unsafe_allow_html=True)
     st.markdown("<hr>", unsafe_allow_html=True)
 
 
-def render_signal_chart(sig: dict) -> None:
+def render_signal_chart(sig: dict, key: str = "signal") -> None:  # key: the chart appears twice on the page
     samples = sig.get("samples") or []
     if not isinstance(samples, list) or not samples:
         st.warning("No vibration samples were returned for this recording.")
@@ -191,7 +215,7 @@ def render_signal_chart(sig: dict) -> None:
     fig.update_layout(height=260, margin=dict(l=8, r=8, t=10, b=28), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(7,14,23,.35)",
                       font={"color": "#91a7bf", "size": 10}, xaxis_title="Time (seconds)", yaxis_title="Amplitude", showlegend=False,
                       xaxis={"gridcolor": "#243447", "zerolinecolor": "#34475b"}, yaxis={"gridcolor": "#243447", "zerolinecolor": "#34475b"})
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False}, key=key)
 
 
 def render_spectrum(samples: list[float], rate: int) -> None:
@@ -208,7 +232,7 @@ def render_spectrum(samples: list[float], rate: int) -> None:
         magnitudes.append((k * rate / n, math.sqrt(real * real + imag * imag) / n))
     fig = go.Figure(go.Scatter(x=[p[0] for p in magnitudes], y=[p[1] for p in magnitudes], mode="lines", line={"color": "#a78bfa", "width": 1.5}))
     fig.update_layout(height=190, margin=dict(l=8, r=8, t=5, b=25), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(7,14,23,.35)", font={"color": "#91a7bf", "size": 10}, xaxis_title="Frequency (Hz)", yaxis_title="Magnitude", showlegend=False, xaxis={"gridcolor": "#243447"}, yaxis={"gridcolor": "#243447"})
-    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False}, key="spectrum")
 
 
 def render_result(data: dict, sig: dict, rec_id: str) -> None:
@@ -233,15 +257,25 @@ def render_result(data: dict, sig: dict, rec_id: str) -> None:
     m2.metric("SEVERITY", severity.title())
     m3.metric("RESPONSE TIME", f"{latency} ms" if isinstance(latency, (int, float)) else str(latency))
     if confidence_ok:
-        st.progress(float(confidence), text="Model confidence (demo value in mock mode)")
+        st.progress(float(confidence), text="Model confidence (demo value in mock mode)" if MOCK else "Model confidence")
+    lat = meta.get("latency_ms") or {}
+    st.caption(f"Explanation model: {meta.get('model', '—')} · Served on: {meta.get('served_on', '—')} · "
+               f"classifier {lat.get('classifier', '—')} ms · retrieval {lat.get('retrieval', '—')} ms · LLM {lat.get('llm', '—')} ms")
 
     st.markdown('<div class="section-label" style="margin-top:22px">02 / Signal diagnostics</div>', unsafe_allow_html=True)
     st.markdown('<div class="panel"><div class="panel-title">Vibration waveform</div><div class="panel-sub">Time-domain signal · Interactive hover · Up to 2,000 points</div>', unsafe_allow_html=True)
-    render_signal_chart(sig)
+    render_signal_chart(sig, key="signal_result")
     rate = sig.get("sample_rate_hz") or 12000
     with st.expander("View frequency spectrum (experimental)"):
         st.caption("Approximate spectrum from the displayed window. This is a visualization aid, not a fault-frequency diagnosis.")
         render_spectrum(sig.get("samples") or [], rate)
+    if "evidence" in sensor:
+        with st.expander("Vibration evidence (physics check, independent of the classifier)"):
+            for e in sensor.get("evidence") or []:
+                st.write(f"**{e.get('matches', '?')}** peak at {e.get('freq_hz')} Hz (expected near {e.get('expected_hz')} Hz) · "
+                         f"{e.get('vs_normal')}× the healthy baseline · {str(e.get('strength', '')).upper()}")
+            if not sensor.get("evidence"):
+                st.caption("No vibration peak stands out from the healthy baseline.")
     st.markdown(f'<div class="panel-sub">Sensor: {(sensor.get("context") or {}).get("sensor", "drive_end")} &nbsp;·&nbsp; Sample rate: {rate:,} Hz &nbsp;·&nbsp; Window: {sensor.get("window_index", sig.get("window_index", "—"))}</div></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="section-label" style="margin-top:22px">03 / Explanation</div>', unsafe_allow_html=True)
@@ -281,8 +315,8 @@ def render_result(data: dict, sig: dict, rec_id: str) -> None:
                 st.caption(f"Source unavailable for citation: {cid}")
                 continue
             title = citation.get("source_title", "Untitled source")
-            page = citation.get("page", "?")
-            with st.expander(f"↗ Source: {title} · p. {page}"):
+            page = citation.get("page")
+            with st.expander(f"↗ Source: {title}" + (f" · p. {page}" if page is not None else "")):
                 st.write(citation.get("excerpt") or "No excerpt supplied.")
                 if citation.get("synthetic") or "synthetic" in str(cid).lower() or "mock" in str(cid).lower():
                     st.caption("Illustrative mock citation — replace with a verified source before presenting as evidence.")
@@ -303,14 +337,14 @@ def render_result(data: dict, sig: dict, rec_id: str) -> None:
         st.markdown('<div class="warning">A safety-critical action is present. Confirm only after reviewing the procedure and site safety requirements.</div>', unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
-        confirm_clicked = st.button("✓  Confirm reviewed", type="primary", use_container_width=True, key="confirm_decision")
+        confirm_clicked = st.button("✓  Confirm reviewed", type="primary", width="stretch", key="confirm_decision")
     with c2:
-        escalate_clicked = st.button("↗  Escalate to specialist", use_container_width=True, key="escalate_decision")
+        escalate_clicked = st.button("↗  Escalate to specialist", width="stretch", key="escalate_decision")
     decision = "confirmed" if confirm_clicked else "escalated" if escalate_clicked else None
     if decision:
         try:
             response = {"status": "stored"} if MOCK else post_json("/confirm", {"request_id": request_id, "decision": decision})
-            if response.get("status") != "stored":
+            if response.get("status") != "stored" and response.get("decision") != decision:
                 raise ValueError("The backend did not confirm that the decision was stored.")
             st.session_state["decision"] = decision
         except (requests.RequestException, ValueError, KeyError) as exc:
@@ -336,7 +370,8 @@ def render_result(data: dict, sig: dict, rec_id: str) -> None:
     with st.expander("All sources used"):
         if citations:
             for cite in citations.values():
-                st.write(f"**{cite.get('source_title', 'Unknown source')}** · page {cite.get('page', '?')} · {cite.get('excerpt', 'No excerpt supplied.')}")
+                page = f" · page {cite['page']}" if cite.get("page") is not None else ""
+                st.write(f"**{cite.get('source_title', 'Unknown source')}**{page} · {cite.get('excerpt', 'No excerpt supplied.')}")
         else:
             st.caption("No sources were returned.")
     if MOCK:
@@ -367,16 +402,19 @@ try:
                             format_func=lambda rid: f"{rid}   ·   {names.get(rid, 'Unknown condition')}")
     chosen = row_map[selected]
     a, b, c, d = st.columns([1.1, 1, 1, 1.2])
-    a.markdown(f'<div class="metric-card"><div class="metric-label">Condition label</div><div class="metric-value" style="font-size:17px">{names.get(selected, "Unknown")}</div><div class="metric-note">Mock label for demo only</div></div>', unsafe_allow_html=True)
+    a.markdown(f'<div class="metric-card"><div class="metric-label">Condition label</div><div class="metric-value" style="font-size:17px">{names.get(selected, "Unknown")}</div><div class="metric-note">{"Mock label for demo only" if MOCK else "Recorded condition (CWRU)"}</div></div>', unsafe_allow_html=True)
     b.markdown(f'<div class="metric-card"><div class="metric-label">Motor speed</div><div class="metric-value">{chosen.get("approx_rpm", "—")}</div><div class="metric-note">RPM (approx.)</div></div>', unsafe_allow_html=True)
     c.markdown(f'<div class="metric-card"><div class="metric-label">Load</div><div class="metric-value">{chosen.get("load_hp", "—")} hp</div><div class="metric-note">Motor load</div></div>', unsafe_allow_html=True)
     d.markdown(f'<div class="metric-card"><div class="metric-label">Available windows</div><div class="metric-value">{chosen.get("num_windows", "—")}</div><div class="metric-note">Signal segments</div></div>', unsafe_allow_html=True)
+    last_window = max(int(chosen.get("num_windows") or 100) - 1, 0)
+    window = st.slider("WINDOW (a 2,048-sample slice of the recording)", 0, last_window, min(12, last_window),
+                       key=f"window_{selected}", help="Different windows give different confidence: try a few.")
     st.write("")
     run_col, next_col, hint_col = st.columns([1.15, 1, 2.8], vertical_alignment="center")
     with run_col:
-        run = st.button("⌕  Analyze recording", type="primary", use_container_width=True)
+        run = st.button("⌕  Analyze recording", type="primary", width="stretch")
     with next_col:
-        next_clicked = st.button("Next demo recording  →", use_container_width=True)
+        next_clicked = st.button("Next demo recording  →", width="stretch")
     with hint_col:
         st.markdown('<div class="status-line">Demo sequence includes healthy, inner-race, outer-race and ball-fault examples.</div>', unsafe_allow_html=True)
     if next_clicked:
@@ -386,9 +424,9 @@ try:
     if run:
         try:
             with st.spinner("Stage 1/2 · Reading vibration signal…"):
-                sig = signal(selected)
-            with st.spinner("Stage 2/2 · Analyzing signal and preparing guidance…"):
-                result = analyze(selected)
+                sig = signal(selected, window)
+            with st.spinner("Stage 2/2 · Analyzing signal and preparing guidance… (10 to 20 s with the live LLM)"):
+                result = analyze(selected, window)
             if not isinstance(result.get("sensor"), dict):
                 raise ValueError("Analysis response is missing the sensor object")
             st.session_state["result"] = result
@@ -409,7 +447,7 @@ try:
             st.markdown('<div class="section-label">Live signal preview</div>', unsafe_allow_html=True)
             st.markdown('<div class="panel"><div class="panel-title">Sensor data</div><div class="panel-sub">Vibration window loaded from selected recording</div>', unsafe_allow_html=True)
             sig = st.session_state["signal"]
-            render_signal_chart(sig)
+            render_signal_chart(sig, key="signal_preview")
             st.markdown(f'<div class="panel-sub">ID: {active_id} &nbsp;·&nbsp; Window: {sig.get("window_index", 12)} &nbsp;·&nbsp; {sig.get("sample_rate_hz", "—")} Hz</div></div>', unsafe_allow_html=True)
         with right:
             render_result(st.session_state["result"], sig, active_id)
@@ -419,4 +457,5 @@ except (requests.RequestException, ValueError, KeyError, TypeError) as exc:
     st.error(f"Could not load recordings: {exc}")
     st.caption("Check MOCK=true for demo mode, or verify API_URL and the backend service.")
 
-st.markdown('<div class="footnote">BEARINGGUARD · DECISION SUPPORT ONLY &nbsp; | &nbsp; This interface is not a substitute for inspection by a qualified technician. Follow site lockout/tagout procedures and approved maintenance documentation. Confirm all safety-critical actions before work begins.<br>Mock mode uses illustrative data, synthetic signals and placeholder citations. Verify sources and connect the real model/API before presenting diagnostic claims as real.</div>', unsafe_allow_html=True)
+MOCK_NOTE = "<br>Mock mode uses illustrative data, synthetic signals and placeholder citations. Verify sources and connect the real model/API before presenting diagnostic claims as real." if MOCK else ""
+st.markdown(f'<div class="footnote">BEARINGGUARD · DECISION SUPPORT ONLY &nbsp; | &nbsp; This interface is not a substitute for inspection by a qualified technician. Follow site lockout/tagout procedures and approved maintenance documentation. Confirm all safety-critical actions before work begins.{MOCK_NOTE}</div>', unsafe_allow_html=True)

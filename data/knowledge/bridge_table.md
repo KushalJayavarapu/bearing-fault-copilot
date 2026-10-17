@@ -1,6 +1,6 @@
 # Curated Bearing Fault Bridge Table
 
-> **Note:** This is a curated mapping developed for the Bearing Fault Copilot (AMD Hackathon ACT III, Track 1). It links CWRU experimental fault locations to industrial failure modes, physical root causes, inspection steps, and corrective maintenance actions documented in official bearing manufacturer guides. It is not an official OEM manual.
+> **Note:** This is a curated mapping developed for the Bearing Fault Copilot (AMD Hackathon ACT III, Track 1). It links CWRU experimental fault locations to industrial failure modes, physical root causes, inspection steps, and corrective maintenance actions described in bearing manufacturer literature. It was written by the team. **It is not an official OEM manual, and the page references in the last column have not been checked against the original publications, so treat them as unverified. The app does not show them.**
 
 | Fault type | Damage mode name used in the guide | Likely causes (from the guide) | Inspection and actions (from the guide) | Safety-critical step? | Source and page |
 | :--- | :--- | :--- | :--- | :--- | :--- |

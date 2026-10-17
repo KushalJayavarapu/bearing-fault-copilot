@@ -165,12 +165,41 @@ def test_citation_uses_the_retrieval_excerpt_and_labels_synthetic_sources():
     assert c["stub-outer_race-action"]["excerpt"].startswith("Stub text for development only.")  # no excerpt: text slice
 
 
+def test_page_numbers_are_hidden_unless_cite_pages_is_on():
+    def retrieve(req):
+        ps = retrieval_stub.retrieve(req)["passages"]
+        ps[0] = {**ps[0], "page": 34}  # stub-outer_race-defect: a number
+        ps[1] = {**ps[1], "page": "bridge-table"}  # stub-outer_race-action: a text label, which the contract cannot hold
+        return {"passages": ps}
+    llm = FakeLLM(GOOD)
+    a = _run(_sensor(), llm, retrieve=retrieve)  # _run also validates the answer against the contract schema
+    assert all(c["page"] is None for c in a["citations"])
+    assert ", p." not in llm.calls[0][1]["content"] and "bridge-table" not in llm.calls[0][1]["content"].split("PASSAGES")[0]
+    old = orchestrator.CITE_PAGES
+    try:
+        orchestrator.CITE_PAGES = True
+        c = {x["id"]: x for x in _run(_sensor(), FakeLLM(GOOD), retrieve=retrieve)["citations"]}
+        assert c["stub-outer_race-defect"]["page"] == 34 and c["stub-outer_race-action"]["page"] is None  # text label still dropped
+    finally:
+        orchestrator.CITE_PAGES = old
+
+
 def test_all_actions_unsupported_falls_back_to_manual_inspection():
     bad = json.loads(GOOD)
     for act in bad["recommended_actions"]:
         act["citation_ids"] = ["made-up-id"]
     a = _run(_sensor(), FakeLLM(json.dumps(bad)))
     assert a["recommended_actions"] == [orchestrator.MANUAL] and a["citations"] == []
+
+
+def test_confident_healthy_result_does_not_ask_for_an_inspection():
+    healthy = _sensor("Normal_3", 1, fault_type="normal", severity="none", confidence=0.99, evidence=[])
+    done = json.dumps({"explanation": "No fault is present.", "likely_causes": [], "recommended_actions": []})
+    a = _run(healthy, FakeLLM(done))
+    assert a["uncertainty"]["level"] == "low" and a["recommended_actions"] == [orchestrator.ROUTINE]
+    assert a["needs_human_confirm"] is False
+    unsure = _run({**healthy, "confidence": 0.8}, FakeLLM(done))  # medium: a manual check should still confirm it
+    assert unsure["uncertainty"]["level"] == "medium" and unsure["recommended_actions"] == [orchestrator.MANUAL]
 
 
 def test_high_uncertainty_adds_hedge_and_manual_inspection_first():
